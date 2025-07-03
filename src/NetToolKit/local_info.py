@@ -1,10 +1,10 @@
 # 使用netsh命令获取此电脑上所有网络适配器的IP地址（包括IPv4和IPv6），去除本地回环地址。
 
 import subprocess
-import locale
+# import locale
 import ipaddress
 
-system_encoding: str
+# system_encoding: str
 
 
 def get_all_local_ip_v4():
@@ -54,6 +54,17 @@ def get_all_local_ip_v6():
     return ip_list
 
 
+def get_all_local_ip():
+    """
+    获取本机IP地址（包括IPv4和IPv6）
+    :return: IP地址列表
+    """
+    ip_list = []
+    ip_list.extend(get_all_local_ip_v4())
+    ip_list.extend(get_all_local_ip_v6())
+    return ip_list
+
+
 def get_all_local_ip_v4_non_loopback():
     """
     获取本机IP地址（去除回环地址）
@@ -100,6 +111,17 @@ def get_all_local_ip_v6_non_loopback():
                 if not ipaddress.ip_address(ip).is_loopback:
                     ip_list.append(ip)
 
+    return ip_list
+
+
+def get_all_local_ip_non_loopback():
+    """
+    获取本机IP地址（去除回环地址）
+    :return: IP地址列表
+    """
+    ip_list = []
+    ip_list.extend(get_all_local_ip_v4_non_loopback())
+    ip_list.extend(get_all_local_ip_v6_non_loopback())
     return ip_list
 
 
@@ -153,9 +175,20 @@ def get_all_local_ip_v6_non_local():
     return ip_list
 
 
+def get_all_local_ip_non_local():
+    """
+    获取本机IP地址（去除本地地址）
+    :return: IP地址列表
+    """
+    ip_list = []
+    ip_list.extend(get_all_local_ip_v4_non_local())
+    ip_list.extend(get_all_local_ip_v6_non_local())
+    return ip_list
+
+
 if __name__ == '__main__':
     # 获取系统默认编码
-    system_encoding = locale.getpreferredencoding()
-    ip_list = get_all_local_ip_v4_non_loopback()
+    # system_encoding = locale.getpreferredencoding()
+    ip_list = get_all_local_ip_v4_non_local()
     print(ip_list)
 

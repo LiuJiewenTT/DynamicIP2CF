@@ -67,6 +67,6 @@ if __name__ == "__main__":
             pass
     else:
         # GUI模式
-        import GUI.main as gui_main
+        import DynamicIP2CF.GUI.main as gui_main
         gui_main.main()
         pass
