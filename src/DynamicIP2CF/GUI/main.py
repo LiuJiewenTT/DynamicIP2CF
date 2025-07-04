@@ -4,6 +4,7 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, Q
 from PySide6.QtCore import Qt, Signal
 
 import NetToolKit.local_info
+from DynamicIP2CF.utils_toplevel import cf_update_ip
 
 
 class MainWindow(QMainWindow):
@@ -75,6 +76,7 @@ class MainWindow(QMainWindow):
         pass
 
     def update_ip(self):
+        # cf_update_ip()
         pass
 
     def get_ip_list(self) -> List[str]:

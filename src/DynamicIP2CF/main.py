@@ -1,70 +1,71 @@
+from typing import Dict, Union, SupportsInt
+
 import requests
 import json
 import argparse
 
-
-def cf_update_ip(ip_version: str, ip: str, API_TOKEN: str, ZONE_ID: str, RECORD_ID: str, DNS_NAME: str):
-    # 数值检查
-    if not ip_version:
-        raise ValueError("ip_version should only be \"v4\" or \"v6\".")
-    if not API_TOKEN:
-        raise ValueError("API_TOKEN invalid value")
-    if not ZONE_ID:
-        raise ValueError("ZONE_ID invalid value")
-    if not RECORD_ID:
-        raise ValueError("RECORD_ID invalid value")
-    if not DNS_NAME:
-        raise ValueError("DNS_NAME invalid value")
-
-    record_type = "AAAA" if ip_version == "v6" else ("A" if ip_version == "v4" else "")
-    if record_type == "":
-        raise ValueError("ip_version should only be \"v4\" or \"v6\".")
-
-    # 构造Cloudflare API请求
-    url = f"https://api.cloudflare.com/client/v4/zones/{ZONE_ID}/dns_records/{RECORD_ID}"
-    headers = {
-        "Authorization": f"Bearer {API_TOKEN}",
-        "Content-Type": "application/json"
-    }
-    data = {
-        "type": record_type,
-        "name": DNS_NAME,
-        "content": ip,
-        "ttl": 300,
-        "proxied": False
-    }
-
-    # 发送更新请求
-    response = requests.put(url, headers=headers, data=json.dumps(data))
-
-    # 输出结果
-    print(f"Update IP {DNS_NAME} -> {ip}")
-    print(response.status_code, response.text)
-    return response.status_code == 200
+import DynamicIP2CF.common as common
+from DynamicIP2CF.utils_toplevel import *
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Update Cloudflare DNS record IP")
     parser.add_argument("--cli-mode", action="store_true", help="Run in CLI mode")
-    cli_mode = parser.parse_args().cli_mode
-    if cli_mode:
-        parser.add_argument("--cli-automated", action="store_true", help="Run in CLI automated mode")
-        cli_automated = parser.parse_args().cli_automated
-        if cli_automated:
-            # cli自动模式
-            parser.add_argument("--ip-version", type=str, required=True, help="IP version, should be v4 or v6")
-            parser.add_argument("--ip", type=str, required=True, help="IP address to update")
-            parser.add_argument("--api-token", type=str, required=True, help="Cloudflare API token")
-            parser.add_argument("--zone-id", type=str, required=True, help="Cloudflare zone ID")
-            parser.add_argument("--record-id", type=str, required=True, help="Cloudflare DNS record ID")
-            parser.add_argument("--dns-name", type=str, required=True, help="DNS name to update")
-            args = parser.parse_args()
+    parser.add_argument("--cli-automated", action="store_true", help="Run in CLI automated mode")
+    parser.add_argument("--read-config-ini", action="store_true", help="Read config.ini file")
+    parser.add_argument("--ip-version", type=str, help="IP version, should be v4 or v6")
+    parser.add_argument("--ip", type=str, help="IP address to update")
+    parser.add_argument("--api-token", type=str, help="Cloudflare API token")
+    parser.add_argument("--zone-id", type=str, help="Cloudflare zone ID")
+    parser.add_argument("--record-id", type=str, help="Cloudflare DNS record ID")
+    parser.add_argument("--dns-name", type=str, help="DNS name to update")
+    args = parser.parse_args()
 
-            retv = cf_update_ip(args.ip_version, args.ip, args.api_token, args.zone_id, args.record_id, args.dns_name)
+    flag_cli_mode = args.cli_mode
+    flag_cli_automated = args.cli_automated
+    flag_read_config_ini = args.read_config_ini
+
+    record_info: Union[argparse.Namespace, None] = None
+    record_info_dict: Dict[str, str] = {}
+    record_info_list = []
+
+    if flag_cli_mode:
+        retv: SupportsInt = 0
+
+        if flag_cli_automated:
+            # cli自动模式
+
+            required_args = ["ip_version", "ip", "api_token", "zone_id", "record_id", "dns_name"]
+
+            if flag_read_config_ini:
+                common.iniConfigManager = common.IniConfigManager(common.config_ini_path)
+                common.iniConfigManager.read_config_file()
+                record_info_dict = common.iniConfigManager.get_record_info()
+                record_info_list = record_info.values()
+                record_info = argparse.Namespace(**record_info_dict)
+
+            # 检查必要参数是否存在
+            for arg in required_args:
+                if not getattr(args, arg):
+                    print(f"Error: {arg} is required in CLI automated mode.")
+                    exit(1)
+                else:
+                    record_info.update({arg: args.get(arg)})
+
+            retv = cf_update_ip(record_info.ip_version, record_info.ip, record_info.api_token, record_info.zone_id, record_info.record_id, record_info.dns_name)
             exit(0 if retv else 1)
         else:
             # cli交互模式
-            pass
+            record_info_list = input_info_from_console()
+            print(f'record_info_list: ', *record_info_list)
+            retv = 1
+            # retv = cf_update_ip(*record_info_list)
+            if retv:
+                print("Update IP success.")
+                exit(0)
+            else:
+                print("Update IP failed.")
+                exit(1)
     else:
         # GUI模式
         import DynamicIP2CF.GUI.main as gui_main
