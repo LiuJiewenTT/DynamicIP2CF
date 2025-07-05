@@ -1,6 +1,5 @@
 import requests
 import json
-import configparser
 
 
 cf_required_info = ["ip_version", "ip", "api_token", "zone_id", "record_id", "dns_name"]

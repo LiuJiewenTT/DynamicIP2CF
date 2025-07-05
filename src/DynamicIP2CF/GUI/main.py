@@ -1,7 +1,7 @@
 import ipaddress
 from typing import List
 
-from PySide6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QListWidget, QLabel, QPushButton, QHBoxLayout
+from PySide6.QtWidgets import QApplication, QMainWindow, QFrame, QWidget, QListWidget, QHBoxLayout, QVBoxLayout, QLabel, QPushButton, QSizePolicy
 from PySide6.QtCore import Qt, Signal
 
 import NetToolKit.local_info
@@ -35,22 +35,42 @@ class MainWindow(QMainWindow):
         # Left side list widget
         self.list_widget = QListWidget()
         self.list_widget.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-        self.list_widget.setFixedWidth(400)  # Adjust width to fit IPv6 address length
+        self.list_widget.setFixedWidth(350)  # Adjust width to fit IPv6 address length
         main_layout.addWidget(self.list_widget)
 
         # Right side layout
         right_side_widget = QWidget()
         right_side_layout = QVBoxLayout(right_side_widget)
+        right_side_layout.addStretch(0)
         main_layout.addWidget(right_side_widget)
+
+        # Info Block
+        info_frame = QFrame()
+        info_frame.setFrameStyle(QFrame.Box | QFrame.Plain)
+        info_frame.setLineWidth(2)
+        info_frame.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
+        info_frame_layout = QVBoxLayout(info_frame)
+        right_side_layout.addWidget(info_frame)
 
         # Status label
         status_widget = QWidget()
         status_layout = QHBoxLayout(status_widget)
-        right_side_layout.addWidget(status_widget, alignment=Qt.AlignCenter)
-        self.status_label_title = QLabel("状态：", alignment=Qt.AlignRight)
+        status_widget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
+        info_frame_layout.addWidget(status_widget, alignment=Qt.AlignLeft | Qt.AlignBottom)
+        self.status_label_title = QLabel("状态：", alignment=Qt.AlignLeft | Qt.AlignBottom)
         status_layout.addWidget(self.status_label_title)
-        self.status_label = QLabel("就绪", alignment=Qt.AlignLeft)
+        self.status_label = QLabel("就绪", alignment=Qt.AlignLeft | Qt.AlignBottom)
         status_layout.addWidget(self.status_label)
+
+        # Result label
+        result_widget = QWidget()
+        result_layout = QHBoxLayout(result_widget)
+        result_widget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
+        info_frame_layout.addWidget(result_widget, alignment=Qt.AlignLeft | Qt.AlignBottom)
+        self.result_label_title = QLabel("结果信息：", alignment=Qt.AlignLeft | Qt.AlignBottom)
+        result_layout.addWidget(self.result_label_title)
+        self.result_label = QLabel("空", alignment=Qt.AlignLeft | Qt.AlignBottom)
+        result_layout.addWidget(self.result_label)
 
         # Refresh IP list button
         self.refresh_ip_list_button = QPushButton("刷新本机外部IP")
@@ -71,8 +91,11 @@ class MainWindow(QMainWindow):
         for ip in ip_list:
             self.list_widget.addItem(ip)
 
-    def update_status(self, status):
-        self.status_label.setText(f"Status: {status}")
+    def update_status(self, status: str):
+        self.status_label.setText(status)
+
+    def update_result(self, result: str):
+        self.result_label.setText(result)
 
     def get_selected_ip(self):
         if self.list_widget.count() == 0:
@@ -85,9 +108,12 @@ class MainWindow(QMainWindow):
         return selected_items[0].text()
 
     def update_ip(self):
+        self.update_status("获取IP中...")
         ip_str = self.get_selected_ip()
         if not ip_str:
             # 没有可用IP
+            self.update_result("没有选择IP")
+            self.update_status("就绪")
             return
 
         record_info = common.iniConfigManager.get_record_info()
@@ -97,7 +123,14 @@ class MainWindow(QMainWindow):
             record_info['ip_version'] = 'v6'
         else:
             record_info['ip_version'] = 'v4'
-        cf_update_ip(*record_info.values())
+
+        self.update_status("更新IP到DNS中...")
+        retv = cf_update_ip(*record_info.values())
+        if retv:
+            self.update_result("更新IP到DNS成功")
+        else:
+            self.update_result("更新IP到DNS失败")
+        self.update_status("就绪")
         pass
 
     def get_ip_list(self) -> List[str]:
@@ -106,7 +139,11 @@ class MainWindow(QMainWindow):
 
 def main():
     common.iniConfigManager = common.IniConfigManager(common.config_ini_path)
-    common.iniConfigManager.read_config_file()
+    try:
+        common.iniConfigManager.read_config_file()
+    except FileNotFoundError as fe:
+        common.iniConfigManager.generate_config_file()
+        common.iniConfigManager.read_config_file()
 
     app = QApplication([])
     window = MainWindow()
