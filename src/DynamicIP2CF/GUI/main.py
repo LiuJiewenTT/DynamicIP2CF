@@ -1,9 +1,11 @@
+import ipaddress
 from typing import List
 
 from PySide6.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QWidget, QListWidget, QLabel, QPushButton, QHBoxLayout
 from PySide6.QtCore import Qt, Signal
 
 import NetToolKit.local_info
+from DynamicIP2CF import common
 from DynamicIP2CF.utils_toplevel import cf_update_ip
 
 
@@ -73,10 +75,29 @@ class MainWindow(QMainWindow):
         self.status_label.setText(f"Status: {status}")
 
     def get_selected_ip(self):
-        pass
+        if self.list_widget.count() == 0:
+            return ""
+
+        # 获取选中的条目
+        selected_items = self.list_widget.selectedItems()
+        if len(selected_items) == 0:
+            return ""
+        return selected_items[0].text()
 
     def update_ip(self):
-        # cf_update_ip()
+        ip_str = self.get_selected_ip()
+        if not ip_str:
+            # 没有可用IP
+            return
+
+        record_info = common.iniConfigManager.get_record_info()
+        record_info['ip'] = ip_str
+        ip = ipaddress.ip_address(record_info['ip'])
+        if ip.version == 6:
+            record_info['ip_version'] = 'v6'
+        else:
+            record_info['ip_version'] = 'v4'
+        cf_update_ip(*record_info.values())
         pass
 
     def get_ip_list(self) -> List[str]:
@@ -84,6 +105,9 @@ class MainWindow(QMainWindow):
 
 
 def main():
+    common.iniConfigManager = common.IniConfigManager(common.config_ini_path)
+    common.iniConfigManager.read_config_file()
+
     app = QApplication([])
     window = MainWindow()
     window.show()

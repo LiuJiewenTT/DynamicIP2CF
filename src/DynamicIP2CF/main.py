@@ -19,47 +19,58 @@ if __name__ == "__main__":
     parser.add_argument("--zone-id", type=str, help="Cloudflare zone ID")
     parser.add_argument("--record-id", type=str, help="Cloudflare DNS record ID")
     parser.add_argument("--dns-name", type=str, help="DNS name to update")
+    parser.add_argument("--generate-config-ini", action="store_true", help="Generate config.ini file")
     args = parser.parse_args()
 
     flag_cli_mode = args.cli_mode
     flag_cli_automated = args.cli_automated
     flag_read_config_ini = args.read_config_ini
+    flag_generate_config_ini = args.generate_config_ini
 
-    record_info: Union[argparse.Namespace, None] = None
-    record_info_dict: Dict[str, str] = {}
+    record_info: Dict[str, str] = {}
     record_info_list = []
 
+    if flag_generate_config_ini:
+        common.iniConfigManager = common.IniConfigManager(common.config_ini_path)
+        common.iniConfigManager.generate_config_file()
+        exit(0)
+
     if flag_cli_mode:
-        retv: SupportsInt = 0
+        retv: Union[bool, SupportsInt] = 0
 
         if flag_cli_automated:
             # cli自动模式
 
-            required_args = ["ip_version", "ip", "api_token", "zone_id", "record_id", "dns_name"]
+            required_args = cf_required_info
 
             if flag_read_config_ini:
                 common.iniConfigManager = common.IniConfigManager(common.config_ini_path)
                 common.iniConfigManager.read_config_file()
-                record_info_dict = common.iniConfigManager.get_record_info()
-                record_info_list = record_info.values()
-                record_info = argparse.Namespace(**record_info_dict)
+                record_info = common.iniConfigManager.get_record_info()
+            else:
+                for arg in required_args:
+                    record_info[arg] = getattr(args, arg)
 
             # 检查必要参数是否存在
             for arg in required_args:
-                if not getattr(args, arg):
+                if record_info.get(arg) is None:
                     print(f"Error: {arg} is required in CLI automated mode.")
                     exit(1)
-                else:
-                    record_info.update({arg: args.get(arg)})
 
-            retv = cf_update_ip(record_info.ip_version, record_info.ip, record_info.api_token, record_info.zone_id, record_info.record_id, record_info.dns_name)
+            record_info_list = record_info.values()
+
+            # print(f'record_info_list: ', *record_info_list)
+            # retv = True
+
+            retv = cf_update_ip(*record_info_list)
+
             exit(0 if retv else 1)
         else:
             # cli交互模式
             record_info_list = input_info_from_console()
-            print(f'record_info_list: ', *record_info_list)
-            retv = 1
-            # retv = cf_update_ip(*record_info_list)
+            # print(f'record_info_list: ', *record_info_list)
+            # retv = True
+            retv = cf_update_ip(*record_info_list)
             if retv:
                 print("Update IP success.")
                 exit(0)

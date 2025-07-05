@@ -3,6 +3,9 @@ import json
 import configparser
 
 
+cf_required_info = ["ip_version", "ip", "api_token", "zone_id", "record_id", "dns_name"]
+
+
 def cf_update_ip(ip_version: str, ip: str, API_TOKEN: str, ZONE_ID: str, RECORD_ID: str, DNS_NAME: str):
     # 数值检查
     if not ip_version:
