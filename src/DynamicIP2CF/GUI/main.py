@@ -7,9 +7,12 @@ from PySide6.QtCore import Qt, Signal
 import NetToolKit.local_info
 from DynamicIP2CF import common
 from DynamicIP2CF.utils_toplevel import cf_update_ip
+from DynamicIP2CF.GUI.MyQtHelper import MyQWindowHelper
+
+from DynamicIP2CF.GUI import ConfigureDialog
 
 
-class MainWindow(QMainWindow):
+class MainWindow(MyQWindowHelper):
     window_shown = Signal()
 
     def __init__(self):
@@ -21,11 +24,26 @@ class MainWindow(QMainWindow):
 
     def showEvent(self, event):
         super().showEvent(event)
+        # self.centralWidget()
         self.window_shown.emit()
 
+        current_pos = self.pos()
+        current_size = self.size()
+        current_center = current_pos.x() + current_size.width() / 2, current_pos.y() + current_size.height() / 2
+        # self.move(current_center - self.rect().center())
+        print(f"current_pos: {current_pos}, current_size: {current_size}, current_center: {current_center}")
+
     def __init_layout(self):
-        self.setWindowTitle("IP Status GUI")
-        self.setGeometry(100, 100, 800, 600)
+        self.setWindowTitle("{program_name} (Cloudflare DDNS更新工具)".format(program_name=common.program_name))
+        # self.setGeometry(400, 400, 500, 300)
+
+        self.resize(600, 300)
+        # self.setWH(600, 300)
+        # self.setWindowPos(macro="center")
+        geo = self.frameGeometry()
+        center_point = QApplication.primaryScreen().availableGeometry().center()
+        geo.moveCenter(center_point)
+        self.move(geo.topLeft())
 
         main_widget = QWidget()
         self.setCentralWidget(main_widget)
@@ -72,6 +90,11 @@ class MainWindow(QMainWindow):
         self.result_label = QLabel("空", alignment=Qt.AlignLeft | Qt.AlignBottom)
         result_layout.addWidget(self.result_label)
 
+        # Configure button
+        self.configure_button = QPushButton("配置")
+        self.configure_button.clicked.connect(self.show_configure_dialog)
+        right_side_layout.addWidget(self.configure_button)
+
         # Refresh IP list button
         self.refresh_ip_list_button = QPushButton("刷新本机外部IP")
         self.refresh_ip_list_button.clicked.connect(self.refresh_ip_list)
@@ -84,12 +107,6 @@ class MainWindow(QMainWindow):
 
     def __init_shown(self):
         self.refresh_ip_list()
-
-    def refresh_ip_list(self):
-        ip_list = self.get_ip_list()
-        self.list_widget.clear()
-        for ip in ip_list:
-            self.list_widget.addItem(ip)
 
     def update_status(self, status: str):
         self.status_label.setText(status)
@@ -106,6 +123,18 @@ class MainWindow(QMainWindow):
         if len(selected_items) == 0:
             return ""
         return selected_items[0].text()
+
+    def get_ip_list(self) -> List[str]:
+        return NetToolKit.local_info.get_all_local_ip_non_local()
+
+    def show_configure_dialog(self):
+        ConfigureDialog.ConfigureDialog().exec()
+
+    def refresh_ip_list(self):
+        ip_list = self.get_ip_list()
+        self.list_widget.clear()
+        for ip in ip_list:
+            self.list_widget.addItem(ip)
 
     def update_ip(self):
         self.update_status("获取IP中...")
@@ -132,9 +161,6 @@ class MainWindow(QMainWindow):
             self.update_result("更新IP到DNS失败")
         self.update_status("就绪")
         pass
-
-    def get_ip_list(self) -> List[str]:
-        return NetToolKit.local_info.get_all_local_ip_non_local()
 
 
 def main():
