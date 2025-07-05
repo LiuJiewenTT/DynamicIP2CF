@@ -1,7 +1,7 @@
 import ipaddress
 from typing import List
 
-from PySide6.QtWidgets import QApplication, QMainWindow, QFrame, QWidget, QListWidget, QHBoxLayout, QVBoxLayout, QLabel, QPushButton, QSizePolicy
+from PySide6.QtWidgets import QApplication, QMainWindow, QFrame, QWidget, QListWidget, QHBoxLayout, QVBoxLayout, QLabel, QPushButton, QSizePolicy, QGroupBox
 from PySide6.QtCore import Qt, Signal
 
 import NetToolKit.local_info
@@ -44,13 +44,14 @@ class MainWindow(MyQWindowHelper):
         # Right side layout
         right_side_widget = QWidget()
         right_side_layout = QVBoxLayout(right_side_widget)
-        right_side_layout.addStretch(0)
+        right_side_layout.addStretch(1)
         main_layout.addWidget(right_side_widget)
 
         # Info Block
-        info_frame = QFrame()
-        info_frame.setFrameStyle(QFrame.Box | QFrame.Plain)
-        info_frame.setLineWidth(2)
+        # info_frame = QFrame()
+        info_frame = QGroupBox("信息")
+        # info_frame.setFrameStyle(QFrame.Box | QFrame.Sunken)
+        # info_frame.setLineWidth(1)
         info_frame.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
         info_frame_layout = QVBoxLayout(info_frame)
         right_side_layout.addWidget(info_frame)
