@@ -31,9 +31,20 @@ class MainWindow(MyQWindowHelper):
         self.resize(600, 300)
 
         main_widget = QWidget()
+        main_widget.setObjectName("MainWidget")
         self.setCentralWidget(main_widget)
 
         main_layout = QHBoxLayout(main_widget)
+
+        main_widget.setStyleSheet("""
+        QWidget#MainWidget {
+                                background-image: url("M:/Mine/R.jpg");
+                                background-repeat: no-repeat;
+                                background-position: center;
+                                background-size: cover;
+                                }
+                             """)
+        main_widget.setAutoFillBackground(True)
 
         # Left side list widget
         self.list_widget = QListWidget()
