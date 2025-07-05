@@ -24,26 +24,11 @@ class MainWindow(MyQWindowHelper):
 
     def showEvent(self, event):
         super().showEvent(event)
-        # self.centralWidget()
         self.window_shown.emit()
-
-        current_pos = self.pos()
-        current_size = self.size()
-        current_center = current_pos.x() + current_size.width() / 2, current_pos.y() + current_size.height() / 2
-        # self.move(current_center - self.rect().center())
-        print(f"current_pos: {current_pos}, current_size: {current_size}, current_center: {current_center}")
 
     def __init_layout(self):
         self.setWindowTitle("{program_name} (Cloudflare DDNS更新工具)".format(program_name=common.program_name))
-        # self.setGeometry(400, 400, 500, 300)
-
         self.resize(600, 300)
-        # self.setWH(600, 300)
-        # self.setWindowPos(macro="center")
-        geo = self.frameGeometry()
-        center_point = QApplication.primaryScreen().availableGeometry().center()
-        geo.moveCenter(center_point)
-        self.move(geo.topLeft())
 
         main_widget = QWidget()
         self.setCentralWidget(main_widget)
