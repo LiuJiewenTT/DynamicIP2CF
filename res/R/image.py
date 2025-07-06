@@ -1,0 +1,1 @@
+main_window_bg = "assets/R.jpg"

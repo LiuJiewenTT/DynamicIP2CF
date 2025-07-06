@@ -5,6 +5,7 @@ from PySide6.QtWidgets import QApplication, QMainWindow, QFrame, QWidget, QListW
 from PySide6.QtCore import Qt, Signal
 
 import NetToolKit.local_info
+import R
 from DynamicIP2CF import common
 from DynamicIP2CF.utils_toplevel import cf_update_ip
 from DynamicIP2CF.GUI.MyQtHelper import MyQWindowHelper
@@ -37,13 +38,12 @@ class MainWindow(MyQWindowHelper):
         main_layout = QHBoxLayout(main_widget)
 
         main_widget.setStyleSheet("""
-        QWidget#MainWidget {
-                                background-image: url("M:/Mine/R.jpg");
-                                background-repeat: no-repeat;
-                                background-position: center;
-                                background-size: cover;
-                                }
-                             """)
+            QWidget#MainWidget {{
+                background-image: url("{main_window_bg}");
+                background-repeat: no-repeat;
+                background-position: center;
+            }}
+            """.format(main_window_bg=Rsv(R.image.main_window_bg).replace("\\", "/")))
         main_widget.setAutoFillBackground(True)
 
         # Left side list widget
@@ -167,6 +167,11 @@ def main():
     except FileNotFoundError as fe:
         common.iniConfigManager.generate_config_file()
         common.iniConfigManager.read_config_file()
+
+    common.resource_manager = common.ResourceManager()
+    common.Rsv = common.resource_manager.get_res_path
+    global Rsv
+    from DynamicIP2CF.common import Rsv
 
     app = QApplication([])
     window = MainWindow()
