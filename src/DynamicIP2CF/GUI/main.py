@@ -1,9 +1,9 @@
 import ipaddress
-from typing import List
+from typing import List, Tuple
 
 from PySide6.QtWidgets import QApplication, QMainWindow, QFrame, QWidget, QListWidget, QHBoxLayout, QVBoxLayout, QLabel, QPushButton, QSizePolicy, QGroupBox
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QShowEvent, QResizeEvent
+from PySide6.QtGui import QShowEvent, QResizeEvent, QPixmap, QPalette, QBrush
 
 import NetToolKit.local_info
 import R
@@ -11,14 +11,18 @@ from DynamicIP2CF import common
 from DynamicIP2CF.utils_toplevel import cf_update_ip
 from DynamicIP2CF.GUI.MyQtHelper import MyQWindowHelper
 
-from DynamicIP2CF.GUI import ConfigureDialog
+from DynamicIP2CF.GUI import ConfigureDialog, utils as gui_utils
 
 
 class MainWindow(MyQWindowHelper):
+
     window_shown = Signal()
+    widget_pixmap_resize_pairs: List[Tuple[QWidget, QPixmap]]
 
     def __init__(self):
         super().__init__()
+        self.widget_pixmap_resize_pairs = []
+
         self.__init_layout()
 
         # Init listeners
@@ -32,6 +36,9 @@ class MainWindow(MyQWindowHelper):
         super().resizeEvent(event)
 
         self.overlay.setGeometry(self.rect())
+        new_size = self.rect().size()
+        pair_count = len(self.widget_pixmap_resize_pairs)
+        gui_utils.resize_widgets_pixmap([new_size,]*pair_count, self.widget_pixmap_resize_pairs)
 
     def __init_layout(self):
         self.setWindowTitle("{program_name} (Cloudflare DDNS更新工具)".format(program_name=common.program_name))
@@ -43,14 +50,19 @@ class MainWindow(MyQWindowHelper):
 
         self.main_layout = QHBoxLayout(self.main_widget)
 
-        self.main_widget.setStyleSheet("""
-            QWidget#MainWidget {{
-                background-image: url("{main_window_bg}");
-                background-repeat: no-repeat;
-                background-position: center;
-            }}
-            """.format(main_window_bg=RsvP(R.image.main_window_bg)))
-        # main_widget.setAutoFillBackground(True)
+        # self.main_widget.setStyleSheet("""
+        #     QWidget#MainWidget {{
+        #         background-image: url("{main_window_bg}");
+        #         background-repeat: no-repeat;
+        #         background-position: center;
+        #     }}
+        #     """.format(main_window_bg=RsvP(R.image.main_window_bg)))
+        self.main_window_bg_pixmap = QPixmap(RsvP(R.image.main_window_bg))
+        self.main_window_bg_palette = QPalette()
+        # self.main_window_bg_palette.setBrush(QPalette.Window, QBrush(self.main_window_bg_pixmap))
+        self.main_widget.setPalette(self.main_window_bg_palette)
+        self.widget_pixmap_resize_pairs.append((self.main_widget, self.main_window_bg_pixmap))
+        self.main_widget.setAutoFillBackground(True)
 
         self.overlay = QLabel(self.main_widget)
         self.overlay.setStyleSheet("background-color: rgba(255, 255, 255, 180);")
