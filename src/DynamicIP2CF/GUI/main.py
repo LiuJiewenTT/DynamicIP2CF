@@ -1,5 +1,5 @@
 import ipaddress
-from typing import List, Tuple
+from typing import List, Tuple, Union
 
 from PySide6.QtWidgets import QApplication, QMainWindow, QFrame, QWidget, QListWidget, QHBoxLayout, QVBoxLayout, QLabel, QPushButton, QSizePolicy, QGroupBox
 from PySide6.QtCore import Qt, Signal
@@ -87,14 +87,14 @@ class MainWindow(MyQWindowHelper):
         self.info_group = QGroupBox("信息")
         # info_frame.setFrameStyle(QFrame.Panel | QFrame.Sunken)
         # info_frame.setLineWidth(1)
-        self.info_group.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
+        self.info_group.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Minimum)
         self.info_group_layout = QVBoxLayout(self.info_group)
         self.right_side_layout.addWidget(self.info_group)
 
         # Status label
         self.status_widget = QWidget()
         self.status_layout = QHBoxLayout(self.status_widget)
-        self.status_widget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
+        self.status_widget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Minimum)
         self.info_group_layout.addWidget(self.status_widget, alignment=Qt.AlignLeft | Qt.AlignBottom)
         self.status_label_title = QLabel("状态：", alignment=Qt.AlignLeft | Qt.AlignBottom)
         self.status_layout.addWidget(self.status_label_title)
@@ -104,7 +104,7 @@ class MainWindow(MyQWindowHelper):
         # Result label
         self.result_widget = QWidget()
         self.result_layout = QHBoxLayout(self.result_widget)
-        self.result_widget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
+        self.result_widget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Minimum)
         self.info_group_layout.addWidget(self.result_widget, alignment=Qt.AlignLeft | Qt.AlignBottom)
         self.result_label_title = QLabel("结果信息：", alignment=Qt.AlignLeft | Qt.AlignBottom)
         self.result_layout.addWidget(self.result_label_title)
@@ -131,25 +131,41 @@ class MainWindow(MyQWindowHelper):
 
     def update_status(self, status: str):
         self.status_label.setText(status)
+        # self.status_label.adjustSize()
+        # self.info_group.adjustSize()
+        # self.main_widget.adjustSize()
+        # 解除尺寸锁定
+        # self.setMinimumSize(0, 0)
+        # self.adjustSize()
+        gui_utils.adjust_widget_size_recursively(self.status_label)
 
     def update_result(self, result: str):
         self.result_label.setText(result)
+        # self.result_label.adjustSize()
+        # self.info_group.adjustSize()
+        # self.main_widget.adjustSize()
+        # 解除尺寸锁定
+        # self.setMinimumSize(0, 0)
+        # self.adjustSize()
+        gui_utils.adjust_widget_size_recursively(self.result_label)
 
-    def get_selected_ip(self):
+    def get_selected_ip(self) -> Union[str, None]:
         if self.list_widget.count() == 0:
-            return ""
+            return None
 
         # 获取选中的条目
         selected_items = self.list_widget.selectedItems()
         if len(selected_items) == 0:
-            return ""
+            return None
         return selected_items[0].text()
 
     def get_ip_list(self) -> List[str]:
         return NetToolKit.local_info.get_all_local_ip_non_local()
 
     def show_configure_dialog(self):
-        ConfigureDialog.ConfigureDialog().exec()
+        dialog = ConfigureDialog.ConfigureDialog()
+        dialog.current_selected_ip = self.get_selected_ip()
+        dialog.exec()
 
     def refresh_ip_list(self):
         ip_list = self.get_ip_list()
@@ -158,9 +174,10 @@ class MainWindow(MyQWindowHelper):
             self.list_widget.addItem(ip)
 
     def update_ip(self):
+        self.update_result("空")
         self.update_status("获取IP中...")
         ip_str = self.get_selected_ip()
-        if not ip_str:
+        if ip_str is None:
             # 没有可用IP
             self.update_result("没有选择IP")
             self.update_status("就绪")
@@ -175,11 +192,20 @@ class MainWindow(MyQWindowHelper):
             record_info['ip_version'] = 'v4'
 
         self.update_status("更新IP到DNS中...")
-        retv = cf_update_ip(*record_info.values())
+        retv = None
+        update_error = None
+        try:
+            retv = cf_update_ip(*record_info.values())
+        except Exception as e:
+            print(e)
+            update_error = e
         if retv:
             self.update_result("更新IP到DNS成功")
         else:
-            self.update_result("更新IP到DNS失败")
+            if update_error is not None:
+                self.update_result("更新IP到DNS失败：{error}".format(error=str(update_error)))
+            else:
+                self.update_result("更新IP到DNS失败")
         self.update_status("就绪")
         pass
 

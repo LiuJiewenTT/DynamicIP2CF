@@ -18,3 +18,10 @@ def resize_widget_pixmap(size: QSize, pair: Tuple[QWidget, QPixmap]):
 def resize_widgets_pixmap(sizes: List[QSize], pairs: List[Tuple[QWidget, QPixmap]]):
     for size, pair in zip(sizes, pairs):
         resize_widget_pixmap(size, pair)
+
+
+def adjust_widget_size_recursively(widget: QWidget):
+    while widget is not None:
+        widget.adjustSize()
+        widget = widget.parentWidget()
+

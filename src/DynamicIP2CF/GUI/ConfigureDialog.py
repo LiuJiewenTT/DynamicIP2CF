@@ -1,3 +1,6 @@
+from typing import Union
+import ipaddress
+
 from PySide6.QtWidgets import QApplication, QDialog, QDialogButtonBox, QLabel, QVBoxLayout, QHBoxLayout, QSizePolicy, QGridLayout, QLineEdit
 from PySide6.QtCore import Qt
 
@@ -5,6 +8,8 @@ from DynamicIP2CF import common
 
 
 class ConfigureDialog(QDialog):
+
+    current_selected_ip: Union[str, None] = None
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -22,20 +27,26 @@ class ConfigureDialog(QDialog):
         self.gridLayout.addWidget(QLabel("Record ID: "), 2, 0)
         self.gridLayout.addWidget(QLabel("DNS Name: "), 3, 0)
 
+        _, _, api_token, zone_id, record_id, dns_name = common.iniConfigManager.get_record_info()
+
         self.apiTokenEdit = QLineEdit()
         self.apiTokenEdit.setPlaceholderText("请输入API Token")
+        self.apiTokenEdit.setText(api_token)
         self.gridLayout.addWidget(self.apiTokenEdit, 0, 1)
 
         self.zoneIdEdit = QLineEdit()
         self.zoneIdEdit.setPlaceholderText("请输入Zone ID")
+        self.zoneIdEdit.setText(zone_id)
         self.gridLayout.addWidget(self.zoneIdEdit, 1, 1)
 
         self.recordIdEdit = QLineEdit()
         self.recordIdEdit.setPlaceholderText("请输入Record ID")
+        self.recordIdEdit.setText(record_id)
         self.gridLayout.addWidget(self.recordIdEdit, 2, 1)
 
         self.dnsNameEdit = QLineEdit()
         self.dnsNameEdit.setPlaceholderText("请输入DNS Name")
+        self.dnsNameEdit.setText(dns_name)
         self.gridLayout.addWidget(self.dnsNameEdit, 3, 1)
 
         self.layout.addStretch(1)
@@ -59,7 +70,12 @@ class ConfigureDialog(QDialog):
         super().accept()
 
     def apply_config_ini(self):
-        record_info_list = ["", "", self.apiTokenEdit.text(), self.zoneIdEdit.text(), self.recordIdEdit.text(), self.dnsNameEdit.text()]
+        ip = self.current_selected_ip
+        if ip is None:
+            ip = ""
+        ip_version = "" if not ip else ipaddress.ip_address(ip).version
+        ip_version = "v6" if ip_version == 6 else "v4"
+        record_info_list = [ip_version, ip, self.apiTokenEdit.text(), self.zoneIdEdit.text(), self.recordIdEdit.text(), self.dnsNameEdit.text()]
         common.iniConfigManager.update_record_info(*record_info_list)
 
 
