@@ -35,7 +35,14 @@ class ResourceManager:
             raise Exception("Resource root path not set. Please set {}_RES_PATH environment variable.".format(common_static.program_name.upper()))
         # print("Resource root path: {}".format(self.res_root))
 
+    # 用于获取资源路径，并使用当前系统的路径分隔符
     def get_res_path(self, path: str):
-        print("get_res_path: {}".format(path))
-        print("res_path: {}".format(os.path.join(self.res_root, path.replace('/', os.sep))))
         return os.path.join(self.res_root, path.replace('/', os.sep))
+
+    # 用于获取资源路径，并使用slash分隔符
+    def get_res_path_p(self, path: str):
+        return os.path.join(self.res_root, path).replace('\\', '/')
+
+    # 用于获取资源路径，并使用back_slash分隔符
+    def get_res_path_n(self, path: str):
+        return os.path.join(self.res_root, path).replace('/', '\\')

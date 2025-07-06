@@ -3,6 +3,7 @@ from typing import List
 
 from PySide6.QtWidgets import QApplication, QMainWindow, QFrame, QWidget, QListWidget, QHBoxLayout, QVBoxLayout, QLabel, QPushButton, QSizePolicy, QGroupBox
 from PySide6.QtCore import Qt, Signal
+from PySide6.QtGui import QShowEvent, QResizeEvent
 
 import NetToolKit.local_info
 import R
@@ -23,84 +24,95 @@ class MainWindow(MyQWindowHelper):
         # Init listeners
         self.window_shown.connect(self.__init_shown)
 
-    def showEvent(self, event):
+    def showEvent(self, event: QShowEvent):
         super().showEvent(event)
         self.window_shown.emit()
+
+    def resizeEvent(self, event: QResizeEvent) -> None:
+        super().resizeEvent(event)
+
+        self.overlay.setGeometry(self.rect())
 
     def __init_layout(self):
         self.setWindowTitle("{program_name} (Cloudflare DDNS更新工具)".format(program_name=common.program_name))
         self.resize(600, 300)
 
-        main_widget = QWidget()
-        main_widget.setObjectName("MainWidget")
-        self.setCentralWidget(main_widget)
+        self.main_widget = QWidget()
+        self.main_widget.setObjectName("MainWidget")
+        self.setCentralWidget(self.main_widget)
 
-        main_layout = QHBoxLayout(main_widget)
+        self.main_layout = QHBoxLayout(self.main_widget)
 
-        main_widget.setStyleSheet("""
+        self.main_widget.setStyleSheet("""
             QWidget#MainWidget {{
                 background-image: url("{main_window_bg}");
                 background-repeat: no-repeat;
                 background-position: center;
             }}
-            """.format(main_window_bg=Rsv(R.image.main_window_bg).replace("\\", "/")))
-        main_widget.setAutoFillBackground(True)
+            """.format(main_window_bg=RsvP(R.image.main_window_bg)))
+        # main_widget.setAutoFillBackground(True)
+
+        self.overlay = QLabel(self.main_widget)
+        self.overlay.setStyleSheet("background-color: rgba(255, 255, 255, 180);")
+        # self.overlay.setGeometry(self.main_widget.rect())
+        # self.overlay.lower()  # 保证在文字下
+        # self.overlay.show()
 
         # Left side list widget
         self.list_widget = QListWidget()
         self.list_widget.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.list_widget.setFixedWidth(350)  # Adjust width to fit IPv6 address length
-        main_layout.addWidget(self.list_widget)
+        self.main_layout.addWidget(self.list_widget)
 
         # Right side layout
-        right_side_widget = QWidget()
-        right_side_layout = QVBoxLayout(right_side_widget)
-        right_side_layout.addStretch(1)
-        main_layout.addWidget(right_side_widget)
+        self.right_side_widget = QWidget()
+        self.right_side_layout = QVBoxLayout(self.right_side_widget)
+        self.right_side_layout.addStretch(1)
+        self.main_layout.addWidget(self.right_side_widget)
 
         # Info Block
         # info_frame = QFrame()
-        info_frame = QGroupBox("信息")
-        # info_frame.setFrameStyle(QFrame.Box | QFrame.Sunken)
+        self.info_group = QGroupBox("信息")
+        # info_frame.setFrameStyle(QFrame.Panel | QFrame.Sunken)
         # info_frame.setLineWidth(1)
-        info_frame.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
-        info_frame_layout = QVBoxLayout(info_frame)
-        right_side_layout.addWidget(info_frame)
+        self.info_group.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
+        self.info_group_layout = QVBoxLayout(self.info_group)
+        self.right_side_layout.addWidget(self.info_group)
 
         # Status label
-        status_widget = QWidget()
-        status_layout = QHBoxLayout(status_widget)
-        status_widget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
-        info_frame_layout.addWidget(status_widget, alignment=Qt.AlignLeft | Qt.AlignBottom)
+        self.status_widget = QWidget()
+        self.status_layout = QHBoxLayout(self.status_widget)
+        self.status_widget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
+        self.info_group_layout.addWidget(self.status_widget, alignment=Qt.AlignLeft | Qt.AlignBottom)
         self.status_label_title = QLabel("状态：", alignment=Qt.AlignLeft | Qt.AlignBottom)
-        status_layout.addWidget(self.status_label_title)
+        self.status_layout.addWidget(self.status_label_title)
         self.status_label = QLabel("就绪", alignment=Qt.AlignLeft | Qt.AlignBottom)
-        status_layout.addWidget(self.status_label)
+        self.status_layout.addWidget(self.status_label)
 
         # Result label
-        result_widget = QWidget()
-        result_layout = QHBoxLayout(result_widget)
-        result_widget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
-        info_frame_layout.addWidget(result_widget, alignment=Qt.AlignLeft | Qt.AlignBottom)
+        self.result_widget = QWidget()
+        self.result_layout = QHBoxLayout(self.result_widget)
+        self.result_widget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
+        self.info_group_layout.addWidget(self.result_widget, alignment=Qt.AlignLeft | Qt.AlignBottom)
         self.result_label_title = QLabel("结果信息：", alignment=Qt.AlignLeft | Qt.AlignBottom)
-        result_layout.addWidget(self.result_label_title)
+        self.result_layout.addWidget(self.result_label_title)
         self.result_label = QLabel("空", alignment=Qt.AlignLeft | Qt.AlignBottom)
-        result_layout.addWidget(self.result_label)
+        self.result_layout.addWidget(self.result_label)
 
         # Configure button
         self.configure_button = QPushButton("配置")
         self.configure_button.clicked.connect(self.show_configure_dialog)
-        right_side_layout.addWidget(self.configure_button)
+        self.right_side_layout.addWidget(self.configure_button)
 
         # Refresh IP list button
         self.refresh_ip_list_button = QPushButton("刷新本机外部IP")
         self.refresh_ip_list_button.clicked.connect(self.refresh_ip_list)
-        right_side_layout.addWidget(self.refresh_ip_list_button)
+        self.right_side_layout.addWidget(self.refresh_ip_list_button)
 
         # Update IP button
         self.update_ip_button = QPushButton("更新IP到DNS")
         self.update_ip_button.clicked.connect(self.update_ip)
-        right_side_layout.addWidget(self.update_ip_button)
+        self.right_side_layout.addWidget(self.update_ip_button)
 
     def __init_shown(self):
         self.refresh_ip_list()
@@ -169,9 +181,9 @@ def main():
         common.iniConfigManager.read_config_file()
 
     common.resource_manager = common.ResourceManager()
-    common.Rsv = common.resource_manager.get_res_path
-    global Rsv
-    from DynamicIP2CF.common import Rsv
+    common.post_init_resource_manager()
+    from DynamicIP2CF.common import Rsv, RsvP
+    global Rsv, RsvP
 
     app = QApplication([])
     window = MainWindow()
