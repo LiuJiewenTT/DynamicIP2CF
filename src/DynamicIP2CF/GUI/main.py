@@ -211,8 +211,6 @@ def main():
     global Rsv, RsvP
     common.resource_manager = common.ResourceManager()
     common.post_init_resource_manager()
-    # common.Rsv = common.resource_manager.get_res_path
-    # common.RsvP = common.resource_manager.get_res_path_p
     from DynamicIP2CF.common import Rsv, RsvP
 
     app = QApplication([])
