@@ -50,6 +50,9 @@ class ConfigureDialog(QDialog):
         self.setWindowTitle("配置界面")
         # self.resize(400, 300)
 
+        with open(RsvP(R.qss.global_qss), "r", encoding="utf-8") as f:
+            self.setStyleSheet(f.read())
+
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
         # set spacing between widgets

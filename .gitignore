@@ -3,3 +3,4 @@
 /keep_local/
 __pycache__/
 config.ini
+/.run/main_bak.run.xml

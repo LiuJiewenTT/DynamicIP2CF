@@ -1,0 +1,1 @@
+global_qss = "assets/qss/global.qss"

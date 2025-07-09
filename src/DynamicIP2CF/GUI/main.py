@@ -45,10 +45,8 @@ class MainWindow(QMainWindow):
         self.resize(600, 300)
         self.setMinimumSize(600, 300)
 
-        self.setStyleSheet("""
-            QFrame, QGroupBox, QListWidget, QPushButton, QLineEdit, QLabel {
-                background-color: rgba(255, 255, 255, 140);
-            }""")
+        with open(RsvP(R.qss.global_qss), "r", encoding="utf-8") as f:
+            self.setStyleSheet(f.read())
 
         self.main_widget = QWidget()
         self.main_widget.setObjectName("MainWidget")
