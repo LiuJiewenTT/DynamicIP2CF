@@ -19,7 +19,7 @@ class MainWindow(MyQWindowHelper):
     window_shown = Signal()
     widget_pixmap_resize_pairs: List[Tuple[QWidget, QPixmap]]
 
-    def __init__(self):
+    def __init__(self, parent=None):
         super().__init__()
         self.widget_pixmap_resize_pairs = []
 
@@ -43,6 +43,7 @@ class MainWindow(MyQWindowHelper):
     def __init_layout(self):
         self.setWindowTitle("{program_name} (Cloudflare DDNS更新工具)".format(program_name=common.program_name))
         self.resize(600, 300)
+        self.setMinimumSize(600, 300)
 
         self.main_widget = QWidget()
         self.main_widget.setObjectName("MainWidget")
@@ -131,22 +132,10 @@ class MainWindow(MyQWindowHelper):
 
     def update_status(self, status: str):
         self.status_label.setText(status)
-        # self.status_label.adjustSize()
-        # self.info_group.adjustSize()
-        # self.main_widget.adjustSize()
-        # 解除尺寸锁定
-        # self.setMinimumSize(0, 0)
-        # self.adjustSize()
         gui_utils.adjust_widget_size_recursively(self.status_label)
 
     def update_result(self, result: str):
         self.result_label.setText(result)
-        # self.result_label.adjustSize()
-        # self.info_group.adjustSize()
-        # self.main_widget.adjustSize()
-        # 解除尺寸锁定
-        # self.setMinimumSize(0, 0)
-        # self.adjustSize()
         gui_utils.adjust_widget_size_recursively(self.result_label)
 
     def get_selected_ip(self) -> Union[str, None]:
@@ -163,9 +152,10 @@ class MainWindow(MyQWindowHelper):
         return NetToolKit.local_info.get_all_local_ip_non_local()
 
     def show_configure_dialog(self):
-        dialog = ConfigureDialog.ConfigureDialog()
+        dialog = ConfigureDialog.ConfigureDialog(parent=self)
         dialog.current_selected_ip = self.get_selected_ip()
-        dialog.exec()
+        # dialog.exec()   # 阻塞运行
+        dialog.show()   # 非阻塞运行
 
     def refresh_ip_list(self):
         ip_list = self.get_ip_list()
@@ -218,10 +208,12 @@ def main():
         common.iniConfigManager.generate_config_file()
         common.iniConfigManager.read_config_file()
 
+    global Rsv, RsvP
     common.resource_manager = common.ResourceManager()
     common.post_init_resource_manager()
+    # common.Rsv = common.resource_manager.get_res_path
+    # common.RsvP = common.resource_manager.get_res_path_p
     from DynamicIP2CF.common import Rsv, RsvP
-    global Rsv, RsvP
 
     app = QApplication([])
     window = MainWindow()

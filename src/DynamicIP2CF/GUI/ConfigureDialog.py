@@ -1,25 +1,70 @@
-from typing import Union
+import sys
+from typing import Union, List, Tuple
 import ipaddress
 
-from PySide6.QtWidgets import QApplication, QDialog, QDialogButtonBox, QLabel, QVBoxLayout, QHBoxLayout, QSizePolicy, QGridLayout, QLineEdit
+from PySide6.QtGui import QPixmap, QPalette, QResizeEvent
+from PySide6.QtWidgets import QApplication, QDialog, QDialogButtonBox, QLabel, QVBoxLayout, QHBoxLayout, QSizePolicy, \
+    QGridLayout, QLineEdit, QWidget
 from PySide6.QtCore import Qt
 
+import R
 from DynamicIP2CF import common
+from DynamicIP2CF.GUI import utils as gui_utils
+
+
+def load_resource_manager():
+    global Rsv, RsvP
+    if "Rsv" not in globals() or "RsvP" not in globals():
+        module = sys.modules["DynamicIP2CF.common"]
+        if hasattr(module, "RsvP"):
+            from DynamicIP2CF.common import Rsv, RsvP
+        else:
+            raise Exception("Resource manager not initialized")
+    else:
+        # print("Rsv and RsvP found.")
+        pass
 
 
 class ConfigureDialog(QDialog):
 
     current_selected_ip: Union[str, None] = None
+    widget_pixmap_resize_pairs: List[Tuple[QWidget, QPixmap]]
 
     def __init__(self, parent=None):
         super().__init__(parent)
+
+        load_resource_manager()
+        self.widget_pixmap_resize_pairs = []
+
         self.__init_layout()
+
+    def resizeEvent(self, event: QResizeEvent) -> None:
+        super().resizeEvent(event)
+
+        self.overlay.setGeometry(self.rect())
+        new_size = self.rect().size()
+        pair_count = len(self.widget_pixmap_resize_pairs)
+        gui_utils.resize_widgets_pixmap([new_size,]*pair_count, self.widget_pixmap_resize_pairs)
 
     def __init_layout(self):
         self.setWindowTitle("配置界面")
         # self.resize(400, 300)
+
         self.layout = QVBoxLayout()
         self.setLayout(self.layout)
+        # set spacing between widgets
+        self.layout.setSpacing(15)
+        # set margin of the layout
+        self.layout.setContentsMargins(40, 20, 40, 20)
+
+        self.window_bg_pixmap = QPixmap(RsvP(R.image.main_window_bg))
+        self.window_bg_palette = QPalette()
+        self.setPalette(self.window_bg_palette)
+        self.widget_pixmap_resize_pairs.append((self, self.window_bg_pixmap))
+        self.setAutoFillBackground(True)
+
+        self.overlay = QLabel(self)
+        self.overlay.setStyleSheet("background-color: rgba(255, 255, 255, 180);")
 
         self.gridLayout = QGridLayout()
         self.gridLayout.addWidget(QLabel("API Token: "), 0, 0)
@@ -86,6 +131,11 @@ def main():
     except FileNotFoundError as fe:
         common.iniConfigManager.generate_config_file()
         common.iniConfigManager.read_config_file()
+
+    global Rsv, RsvP
+    common.resource_manager = common.ResourceManager()
+    common.post_init_resource_manager()
+    from DynamicIP2CF.common import Rsv, RsvP
 
     app = QApplication()
     dialog = ConfigureDialog()

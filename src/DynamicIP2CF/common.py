@@ -1,4 +1,5 @@
 # share with all at runtime with no concern
+import sys
 
 from DynamicIP2CF.common_static import *
 
@@ -10,9 +11,10 @@ RsvP: ResourceManager.get_res_path_p    # Resolve resource path with path separa
 
 
 def post_init_resource_manager():
-    global resource_manager, Rsv, RsvP
-    Rsv = resource_manager.get_res_path
-    RsvP = resource_manager.get_res_path_p
+    # global resource_manager, Rsv, RsvP
+    mod = sys.modules[__name__]
+    mod.Rsv = resource_manager.get_res_path
+    mod.RsvP = resource_manager.get_res_path_p
 
 
 import configparser
