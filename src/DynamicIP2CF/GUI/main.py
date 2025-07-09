@@ -14,7 +14,7 @@ from DynamicIP2CF.GUI.MyQtHelper import MyQWindowHelper
 from DynamicIP2CF.GUI import ConfigureDialog, utils as gui_utils
 
 
-class MainWindow(MyQWindowHelper):
+class MainWindow(QMainWindow):
 
     window_shown = Signal()
     widget_pixmap_resize_pairs: List[Tuple[QWidget, QPixmap]]
@@ -45,6 +45,11 @@ class MainWindow(MyQWindowHelper):
         self.resize(600, 300)
         self.setMinimumSize(600, 300)
 
+        self.setStyleSheet("""
+            QFrame, QGroupBox, QListWidget, QPushButton, QLineEdit, QLabel {
+                background-color: rgba(255, 255, 255, 140);
+            }""")
+
         self.main_widget = QWidget()
         self.main_widget.setObjectName("MainWidget")
         self.setCentralWidget(self.main_widget)
@@ -66,15 +71,13 @@ class MainWindow(MyQWindowHelper):
         self.main_widget.setAutoFillBackground(True)
 
         self.overlay = QLabel(self.main_widget)
-        self.overlay.setStyleSheet("background-color: rgba(255, 255, 255, 180);")
-        # self.overlay.setGeometry(self.main_widget.rect())
-        # self.overlay.lower()  # 保证在文字下
-        # self.overlay.show()
+        # self.overlay.setStyleSheet("background-color: rgba(255, 255, 255, 180);")
 
         # Left side list widget
         self.list_widget = QListWidget()
         self.list_widget.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.list_widget.setFixedWidth(350)  # Adjust width to fit IPv6 address length
+        # self.list_widget.setStyleSheet("background-color: rgba(255, 255, 255, 180);")
         self.main_layout.addWidget(self.list_widget)
 
         # Right side layout

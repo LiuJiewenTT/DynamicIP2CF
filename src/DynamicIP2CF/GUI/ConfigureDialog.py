@@ -64,7 +64,7 @@ class ConfigureDialog(QDialog):
         self.setAutoFillBackground(True)
 
         self.overlay = QLabel(self)
-        self.overlay.setStyleSheet("background-color: rgba(255, 255, 255, 180);")
+        # self.overlay.setStyleSheet("background-color: rgba(255, 255, 255, 180);")
 
         self.gridLayout = QGridLayout()
         self.gridLayout.addWidget(QLabel("API Token: "), 0, 0)
