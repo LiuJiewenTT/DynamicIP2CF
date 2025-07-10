@@ -1,7 +1,7 @@
 import ipaddress
 from typing import List, Tuple, Union
 
-from PySide6.QtWidgets import QApplication, QMainWindow, QFrame, QWidget, QListWidget, QHBoxLayout, QVBoxLayout, QLabel, QPushButton, QSizePolicy, QGroupBox
+from PySide6.QtWidgets import QApplication, QMainWindow, QFrame, QWidget, QListWidget, QListWidgetItem, QHBoxLayout, QVBoxLayout, QLabel, QPushButton, QSizePolicy, QGroupBox
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QShowEvent, QResizeEvent, QPixmap, QPalette, QBrush
 
@@ -22,6 +22,14 @@ class MainWindow(QMainWindow):
     def __init__(self, parent=None):
         super().__init__()
         self.widget_pixmap_resize_pairs = []
+        self.itemdrop_loop_back_ip_v4 = "127.0.0.1"
+        self.itemdrop_loop_back_ip_v6 = "::1"
+        self.itemdrop_loop_back_ip_v4_str = "Drop IPv4 to: [{ip}]".format(ip=self.itemdrop_loop_back_ip_v4)
+        self.itemdrop_loop_back_ip_v6_str = "Drop IPv6 to: [{ip}]".format(ip=self.itemdrop_loop_back_ip_v6)
+        self.list_dict = {
+            self.itemdrop_loop_back_ip_v4_str: self.itemdrop_loop_back_ip_v4,
+            self.itemdrop_loop_back_ip_v6_str: self.itemdrop_loop_back_ip_v6,
+        }
 
         self.__init_layout()
 
@@ -147,6 +155,10 @@ class MainWindow(QMainWindow):
         selected_items = self.list_widget.selectedItems()
         if len(selected_items) == 0:
             return None
+
+        if self.list_dict.get(selected_items[0].text()) is not None:
+            return self.list_dict.get(selected_items[0].text())
+
         return selected_items[0].text()
 
     def get_ip_list(self) -> List[str]:
@@ -164,6 +176,11 @@ class MainWindow(QMainWindow):
         for ip in ip_list:
             self.list_widget.addItem(ip)
 
+        item_loop_back_v4 = QListWidgetItem(self.itemdrop_loop_back_ip_v4_str)
+        self.list_widget.addItem(item_loop_back_v4)
+        item_loop_back_v6 = QListWidgetItem(self.itemdrop_loop_back_ip_v6_str)
+        self.list_widget.addItem(item_loop_back_v6)
+
     def update_ip(self):
         self.update_result("空")
         self.update_status("获取IP中...")
@@ -176,7 +193,13 @@ class MainWindow(QMainWindow):
 
         record_info = common.iniConfigManager.get_record_info()
         record_info['ip'] = ip_str
-        ip = ipaddress.ip_address(record_info['ip'])
+        try:
+            ip = ipaddress.ip_address(record_info['ip'])
+        except ValueError as e:
+            self.update_result("IP错误：{error}".format(error=str(e)))
+            self.update_status("就绪")
+            return
+
         if ip.version == 6:
             record_info['ip_version'] = 'v6'
         else:
@@ -185,8 +208,10 @@ class MainWindow(QMainWindow):
         self.update_status("更新IP到DNS中...")
         retv = None
         update_error = None
+        status_code = None
+        result_text = ""
         try:
-            retv = cf_update_ip(*record_info.values())
+            retv, status_code, result_text = cf_update_ip(*record_info.values())
         except Exception as e:
             print(e)
             update_error = e
@@ -196,7 +221,7 @@ class MainWindow(QMainWindow):
             if update_error is not None:
                 self.update_result("更新IP到DNS失败：{error}".format(error=str(update_error)))
             else:
-                self.update_result("更新IP到DNS失败")
+                self.update_result("更新IP到DNS失败。\n状态码：{status_code}，详细：{result_text}".format(status_code=status_code, result_text=result_text))
         self.update_status("就绪")
         pass
 

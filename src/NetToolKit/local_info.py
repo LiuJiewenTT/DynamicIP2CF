@@ -5,6 +5,8 @@ import subprocess
 import ipaddress
 
 # system_encoding: str
+import winreg
+from typing import Dict, List, Tuple
 
 
 def get_all_local_ip_v4():
@@ -184,6 +186,55 @@ def get_all_local_ip_non_local():
     ip_list.extend(get_all_local_ip_v4_non_local())
     ip_list.extend(get_all_local_ip_v6_non_local())
     return ip_list
+
+
+def get_windows_proxy_settings() -> Tuple[Dict[str, str], List[str]]:
+    try:
+        reg_path = r"Software\Microsoft\Windows\CurrentVersion\Internet Settings"
+        with winreg.OpenKey(winreg.HKEY_CURRENT_USER, reg_path) as key:
+            proxy_enable, _ = winreg.QueryValueEx(key, "ProxyEnable")
+            proxy_server, _ = winreg.QueryValueEx(key, "ProxyServer")
+            proxy_override, _ = winreg.QueryValueEx(key, "ProxyOverride")
+
+            proxies = {}
+            if proxy_enable == 1 and proxy_server:
+                if "=" in proxy_server:
+                    # http=...;https=...
+                    for part in proxy_server.split(";"):
+                        proto, addr = part.split("=")
+                        proxies[proto] = f"http://{addr}"
+                else:
+                    # 同一个代理给所有协议
+                    proxies = {
+                        "http": f"http://{proxy_server}",
+                        "https": f"http://{proxy_server}"
+                    }
+            return proxies, proxy_override.split(";") if proxy_override else []
+    except Exception as e:
+        print("读取系统代理失败:", e)
+    return {}, []
+
+
+def host_matches_override(host, override_list):
+    if not override_list:
+        return False
+
+    # 检查如果是短名（没有点），且有 <local>
+    if '.' not in host:
+        if "<local>" in override_list:
+            return True
+
+    # 检查通配符
+    for pattern in override_list:
+        pattern = pattern.lower()
+        if pattern == "<local>":
+            continue
+        if pattern.startswith("*"):
+            if host.endswith(pattern[1:]):
+                return True
+        elif host == pattern:
+            return True
+    return False
 
 
 if __name__ == '__main__':

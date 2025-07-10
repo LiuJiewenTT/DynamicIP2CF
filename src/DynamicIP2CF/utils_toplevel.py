@@ -1,13 +1,15 @@
 # 顶层utils，主要包含业务类代码
 
 import requests
+from urllib.parse import urlparse
+from NetToolKit.local_info import get_windows_proxy_settings, host_matches_override
 import json
 
 
 cf_required_info = ["ip_version", "ip", "api_token", "zone_id", "record_id", "dns_name"]
 
 
-def cf_update_ip(ip_version: str, ip: str, API_TOKEN: str, ZONE_ID: str, RECORD_ID: str, DNS_NAME: str):
+def cf_update_ip(ip_version: str, ip: str, API_TOKEN: str, ZONE_ID: str, RECORD_ID: str, DNS_NAME: str, proxies=None, override_list=None):
     # 数值检查
     if not ip_version:
         raise ValueError("ip_version should only be \"v4\" or \"v6\".")
@@ -25,12 +27,18 @@ def cf_update_ip(ip_version: str, ip: str, API_TOKEN: str, ZONE_ID: str, RECORD_
         raise ValueError("ip_version should only be \"v4\" or \"v6\".")
 
     # 构造Cloudflare API请求
-    url = f"https://api.cloudflare.com/client/v4/zones/{ZONE_ID}/dns_records/{RECORD_ID}"
+    modify_url = "https://api.cloudflare.com/client/v4/zones/{ZONE_ID}/dns_records/{RECORD_ID}"
+    query_url = "https://api.cloudflare.com/client/v4/zones/{ZONE_ID}/dns_records"
+
     headers = {
         "Authorization": f"Bearer {API_TOKEN}",
         "Content-Type": "application/json"
     }
-    data = {
+    query_params = {
+        "type": record_type,
+        "name": DNS_NAME
+    }
+    modify_data = {
         "type": record_type,
         "name": DNS_NAME,
         "content": ip,
@@ -38,13 +46,45 @@ def cf_update_ip(ip_version: str, ip: str, API_TOKEN: str, ZONE_ID: str, RECORD_
         "proxied": False
     }
 
+    used_proxies = {}
+
+    session = requests.Session()
+    session.headers.update(headers)
+
+    if proxies is not None:
+        # used_proxies = proxies
+        parsed = urlparse("https://api.cloudflare.com/")
+        host = parsed.hostname.lower()
+        if proxies and not host_matches_override(host, override_list):
+            used_proxies = proxies
+        else:
+            used_proxies = {}  # 禁止用代理
+            session.trust_env = False
+    else:
+        session.trust_env = False  # 禁用从环境变量读取代理
+
+    if RECORD_ID == "":
+        response = session.get(query_url.format(ZONE_ID=ZONE_ID),
+                               headers=headers, params=query_params)
+        if response.status_code == 200:
+            records = response.json().get("result", [])
+            if len(records) == 0:
+                raise ValueError("No DNS record found.")
+            elif len(records) > 1:
+                raise ValueError("More than one DNS record found.")
+            else:
+                RECORD_ID = records[0]["id"]
+        else:
+            raise ValueError(f"Failed to query DNS records: {response.status_code} {response.text}")
+
     # 发送更新请求
-    response = requests.put(url, headers=headers, data=json.dumps(data))
+    response = session.put(modify_url.format(ZONE_ID=ZONE_ID, RECORD_ID=RECORD_ID),
+                           headers=headers, data=json.dumps(modify_data), proxies=used_proxies)
 
     # 输出结果
     print(f"Update IP {DNS_NAME} -> {ip}")
     print(response.status_code, response.text)
-    return response.status_code == 200
+    return response.status_code == 200, response.status_code, response.text
 
 
 def input_info_from_console():

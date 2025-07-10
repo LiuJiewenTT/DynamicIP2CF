@@ -20,6 +20,9 @@ if __name__ == "__main__":
     parser.add_argument("--record-id", type=str, help="Cloudflare DNS record ID")
     parser.add_argument("--dns-name", type=str, help="DNS name to update")
     parser.add_argument("--generate-config-ini", action="store_true", help="Generate config.ini file")
+    parser.add_argument("--proxy-mode", type=str, action="store_value", help="Proxy mode, should be auto, system, manual, or off")
+    parser.add_argument("--proxy-url", type=str, action="store_value", help="Proxy URL, should be like http://127.0.0.1:8888")
+    parser.add_argument("--override-list", type=str, action="store_value", help="Override list, should be like 192.168.1.1,192.168.1.2")
     args = parser.parse_args()
 
     flag_cli_mode = args.cli_mode
@@ -34,6 +37,12 @@ if __name__ == "__main__":
         common.iniConfigManager = common.IniConfigManager(common.config_ini_path)
         common.iniConfigManager.generate_config_file()
         exit(0)
+
+    # 准备解析代理
+    proxy_mode = args.proxy_mode
+    proxy_url = args.proxy_url
+    override_list = args.override_list
+    # more...
 
     if flag_cli_mode:
         retv: Union[bool, SupportsInt] = 0
@@ -62,7 +71,7 @@ if __name__ == "__main__":
             # print(f'record_info_list: ', *record_info_list)
             # retv = True
 
-            retv = cf_update_ip(*record_info_list)
+            retv, status_code, result_text = cf_update_ip(*record_info_list)
 
             exit(0 if retv else 1)
         else:
@@ -70,12 +79,12 @@ if __name__ == "__main__":
             record_info_list = input_info_from_console()
             # print(f'record_info_list: ', *record_info_list)
             # retv = True
-            retv = cf_update_ip(*record_info_list)
+            retv, status_code, result_text = cf_update_ip(*record_info_list)
             if retv:
                 print("Update IP success.")
                 exit(0)
             else:
-                print("Update IP failed.")
+                print("Update IP failed. Status code: {status_code}, result text: {result_text}".format(status_code=status_code, result_text=result_text))
                 exit(1)
     else:
         # GUI模式
