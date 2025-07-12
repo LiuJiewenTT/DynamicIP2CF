@@ -5,6 +5,7 @@ import json
 import argparse
 
 import DynamicIP2CF.common as common
+from DynamicIP2CF import programinfo
 from DynamicIP2CF.utils_toplevel import *
 
 
@@ -30,6 +31,9 @@ if __name__ == "__main__":
     flag_generate_config_ini = args.generate_config_ini
 
     read_config_ini_str = args.read_config_ini
+
+    programinfo.init_program_info()
+    print(programinfo.programinfo_str1)
 
     record_info: Dict[str, str] = {}
     record_info_list = []
