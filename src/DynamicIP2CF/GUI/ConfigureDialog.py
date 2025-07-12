@@ -75,7 +75,7 @@ class ConfigureDialog(QDialog):
         self.gridLayout.addWidget(QLabel("Record ID: "), 2, 0)
         self.gridLayout.addWidget(QLabel("DNS Name: "), 3, 0)
 
-        _, _, api_token, zone_id, record_id, dns_name = common.iniConfigManager.get_record_info()
+        _, _, api_token, zone_id, record_id, dns_name = common.iniConfigManager.get_record_info().values()
 
         self.apiTokenEdit = QLineEdit()
         self.apiTokenEdit.setPlaceholderText("请输入API Token")

@@ -20,9 +20,9 @@ if __name__ == "__main__":
     parser.add_argument("--record-id", type=str, help="Cloudflare DNS record ID")
     parser.add_argument("--dns-name", type=str, help="DNS name to update")
     parser.add_argument("--generate-config-ini", action="store_true", help="Generate config.ini file")
-    parser.add_argument("--proxy-mode", type=str, action="store_value", help="Proxy mode, should be auto, system, manual, or off")
-    parser.add_argument("--proxy-url", type=str, action="store_value", help="Proxy URL, should be like http://127.0.0.1:8888")
-    parser.add_argument("--override-list", type=str, action="store_value", help="Override list, should be like 192.168.1.1,192.168.1.2")
+    parser.add_argument("--proxy-mode", type=str, action="store", help="Proxy mode, should be auto, system, manual, or off", default="auto")
+    parser.add_argument("--proxy-url", type=str, action="store", help="Proxy URL, should be like http://127.0.0.1:8888")
+    parser.add_argument("--override-list", type=str, action="store", help="Override list, should be like 192.168.1.1;192.168.1.2. May not work very well.")
     args = parser.parse_args()
 
     flag_cli_mode = args.cli_mode
@@ -41,8 +41,27 @@ if __name__ == "__main__":
     # 准备解析代理
     proxy_mode = args.proxy_mode
     proxy_url = args.proxy_url
+    used_proxies = None
     override_list = args.override_list
-    # more...
+
+    print(f"proxy_mode: {proxy_mode}, proxy_url: {proxy_url}, override_list: {override_list}")
+
+    if proxy_mode == "auto":
+        proxy_mode = "system"
+    if proxy_mode == "manual":
+        if proxy_url is None:
+            raise ValueError("Error: proxy URL is required in manual proxy mode.")
+        used_proxies = resolve_proxies_dict_from_string(proxy_url)
+    elif proxy_mode == "system":
+        used_proxies, override_list = get_windows_proxy_settings()
+    elif proxy_mode == "off":
+        used_proxies = None
+        override_list = None
+    else:
+        raise ValueError("Error: invalid proxy mode.")
+
+    print(f"proxy_mode: {proxy_mode}, used_proxies: {used_proxies}, override_list: {override_list}")
+
 
     if flag_cli_mode:
         retv: Union[bool, SupportsInt] = 0
@@ -71,7 +90,7 @@ if __name__ == "__main__":
             # print(f'record_info_list: ', *record_info_list)
             # retv = True
 
-            retv, status_code, result_text = cf_update_ip(*record_info_list)
+            retv, status_code, result_text = cf_update_ip(*record_info_list, proxies=used_proxies, override_list=override_list)
 
             exit(0 if retv else 1)
         else:
@@ -79,7 +98,7 @@ if __name__ == "__main__":
             record_info_list = input_info_from_console()
             # print(f'record_info_list: ', *record_info_list)
             # retv = True
-            retv, status_code, result_text = cf_update_ip(*record_info_list)
+            retv, status_code, result_text = cf_update_ip(*record_info_list, proxies=used_proxies, override_list=override_list)
             if retv:
                 print("Update IP success.")
                 exit(0)

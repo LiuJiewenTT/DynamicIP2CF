@@ -24,11 +24,14 @@ class MainWindow(QMainWindow):
         self.widget_pixmap_resize_pairs = []
         self.itemdrop_loop_back_ip_v4 = "127.0.0.1"
         self.itemdrop_loop_back_ip_v6 = "::1"
-        self.itemdrop_loop_back_ip_v4_str = "Drop IPv4 to: [{ip}]".format(ip=self.itemdrop_loop_back_ip_v4)
-        self.itemdrop_loop_back_ip_v6_str = "Drop IPv6 to: [{ip}]".format(ip=self.itemdrop_loop_back_ip_v6)
+        self.itemdrop_document_ip = "2001:db8::"
+        self.itemdrop_loop_back_ip_v4_str = "Drop IPv4 with: [{ip}]".format(ip=self.itemdrop_loop_back_ip_v4)
+        self.itemdrop_loop_back_ip_v6_str = "Drop IPv6 with: [{ip}]".format(ip=self.itemdrop_loop_back_ip_v6)
+        self.itemdrop_document_ip_str = "Drop IPv6 with Documentation Address: [{ip}]".format(ip=self.itemdrop_document_ip)
         self.list_dict = {
             self.itemdrop_loop_back_ip_v4_str: self.itemdrop_loop_back_ip_v4,
             self.itemdrop_loop_back_ip_v6_str: self.itemdrop_loop_back_ip_v6,
+            self.itemdrop_document_ip_str: self.itemdrop_document_ip
         }
 
         self.__init_layout()
@@ -180,6 +183,8 @@ class MainWindow(QMainWindow):
         self.list_widget.addItem(item_loop_back_v4)
         item_loop_back_v6 = QListWidgetItem(self.itemdrop_loop_back_ip_v6_str)
         self.list_widget.addItem(item_loop_back_v6)
+        item_document_ip = QListWidgetItem(self.itemdrop_document_ip_str)
+        self.list_widget.addItem(item_document_ip)
 
     def update_ip(self):
         self.update_result("空")
@@ -210,8 +215,14 @@ class MainWindow(QMainWindow):
         update_error = None
         status_code = None
         result_text = ""
+
+        used_proxies, override_list = NetToolKit.local_info.get_windows_proxy_settings()
+        if not used_proxies:
+            used_proxies = None
+            override_list = None
+
         try:
-            retv, status_code, result_text = cf_update_ip(*record_info.values())
+            retv, status_code, result_text = cf_update_ip(*record_info.values(), proxies=used_proxies, override_list=override_list)
         except Exception as e:
             print(e)
             update_error = e

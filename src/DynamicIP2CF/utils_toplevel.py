@@ -1,15 +1,16 @@
 # 顶层utils，主要包含业务类代码
+from typing import Dict, List
 
 import requests
 from urllib.parse import urlparse
-from NetToolKit.local_info import get_windows_proxy_settings, host_matches_override
+from NetToolKit.local_info import get_windows_proxy_settings, host_matches_override, resolve_proxies_dict_from_string
 import json
 
 
 cf_required_info = ["ip_version", "ip", "api_token", "zone_id", "record_id", "dns_name"]
 
 
-def cf_update_ip(ip_version: str, ip: str, API_TOKEN: str, ZONE_ID: str, RECORD_ID: str, DNS_NAME: str, proxies=None, override_list=None):
+def cf_update_ip(ip_version: str, ip: str, API_TOKEN: str, ZONE_ID: str, RECORD_ID: str, DNS_NAME: str, proxies: Dict[str, str]=None, override_list: List[str]=None):
     # 数值检查
     if not ip_version:
         raise ValueError("ip_version should only be \"v4\" or \"v6\".")
@@ -17,8 +18,8 @@ def cf_update_ip(ip_version: str, ip: str, API_TOKEN: str, ZONE_ID: str, RECORD_
         raise ValueError("API_TOKEN invalid value")
     if not ZONE_ID:
         raise ValueError("ZONE_ID invalid value")
-    if not RECORD_ID:
-        raise ValueError("RECORD_ID invalid value")
+    # if not RECORD_ID:
+    #     raise ValueError("RECORD_ID invalid value")
     if not DNS_NAME:
         raise ValueError("DNS_NAME invalid value")
 
@@ -42,14 +43,14 @@ def cf_update_ip(ip_version: str, ip: str, API_TOKEN: str, ZONE_ID: str, RECORD_
         "type": record_type,
         "name": DNS_NAME,
         "content": ip,
-        "ttl": 300,
-        "proxied": False
+        "ttl": 1,
+        "proxied": True
     }
 
     used_proxies = {}
 
-    session = requests.Session()
-    session.headers.update(headers)
+    dns_session = requests.Session()
+    dns_session.headers.update(headers)
 
     if proxies is not None:
         # used_proxies = proxies
@@ -59,13 +60,17 @@ def cf_update_ip(ip_version: str, ip: str, API_TOKEN: str, ZONE_ID: str, RECORD_
             used_proxies = proxies
         else:
             used_proxies = {}  # 禁止用代理
-            session.trust_env = False
+            dns_session.trust_env = False
     else:
-        session.trust_env = False  # 禁用从环境变量读取代理
+        dns_session.trust_env = False  # 禁用从环境变量读取代理
 
+    query_url_filled = query_url.format(ZONE_ID=ZONE_ID)
+    print(query_url_filled)
+    # response = requests.get(query_url_filled, headers=headers)
+    # print(response.status_code, response.text)
+    # return
     if RECORD_ID == "":
-        response = session.get(query_url.format(ZONE_ID=ZONE_ID),
-                               headers=headers, params=query_params)
+        response = dns_session.get(query_url_filled, params=query_params, proxies=used_proxies)
         if response.status_code == 200:
             records = response.json().get("result", [])
             if len(records) == 0:
@@ -78,8 +83,10 @@ def cf_update_ip(ip_version: str, ip: str, API_TOKEN: str, ZONE_ID: str, RECORD_
             raise ValueError(f"Failed to query DNS records: {response.status_code} {response.text}")
 
     # 发送更新请求
-    response = session.put(modify_url.format(ZONE_ID=ZONE_ID, RECORD_ID=RECORD_ID),
-                           headers=headers, data=json.dumps(modify_data), proxies=used_proxies)
+    modify_url_filled = modify_url.format(ZONE_ID=ZONE_ID, RECORD_ID=RECORD_ID)
+    print(modify_url_filled)
+    response = dns_session.put(modify_url_filled,
+                               data=json.dumps(modify_data), proxies=used_proxies)
 
     # 输出结果
     print(f"Update IP {DNS_NAME} -> {ip}")

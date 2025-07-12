@@ -188,7 +188,28 @@ def get_all_local_ip_non_local():
     return ip_list
 
 
+def resolve_proxies_dict_from_string(proxy_string: str) -> Dict[str, str]:
+    proxies = {}
+    if proxy_string:
+        if "=" in proxy_string:
+            # http=...;https=...
+            for part in proxy_string.split(";"):
+                proto, addr = part.split("=")
+                proxies[proto] = f"http://{addr}"
+        else:
+            # 同一个代理给所有协议
+            proxies = {
+                "http": f"http://{proxy_string}",
+                "https": f"http://{proxy_string}"
+            }
+    return proxies
+
+
 def get_windows_proxy_settings() -> Tuple[Dict[str, str], List[str]]:
+    proxy_enable: int = 0
+    proxy_server: str = ""
+    proxy_override: str = ""
+
     try:
         reg_path = r"Software\Microsoft\Windows\CurrentVersion\Internet Settings"
         with winreg.OpenKey(winreg.HKEY_CURRENT_USER, reg_path) as key:
@@ -198,28 +219,21 @@ def get_windows_proxy_settings() -> Tuple[Dict[str, str], List[str]]:
 
             proxies = {}
             if proxy_enable == 1 and proxy_server:
-                if "=" in proxy_server:
-                    # http=...;https=...
-                    for part in proxy_server.split(";"):
-                        proto, addr = part.split("=")
-                        proxies[proto] = f"http://{addr}"
-                else:
-                    # 同一个代理给所有协议
-                    proxies = {
-                        "http": f"http://{proxy_server}",
-                        "https": f"http://{proxy_server}"
-                    }
-            return proxies, proxy_override.split(";") if proxy_override else []
+                proxies = resolve_proxies_dict_from_string(proxy_server)
+            else:
+                proxy_override = ""
     except Exception as e:
         print("读取系统代理失败:", e)
-    return {}, []
+        return {}, []
+
+    return proxies, proxy_override.split(";") if proxy_override else []
 
 
 def host_matches_override(host, override_list):
     if not override_list:
         return False
 
-    # 检查如果是短名（没有点），且有 <local>
+    # 检查如果是短名（没有点），且有 <local>（本地Intranet地址）
     if '.' not in host:
         if "<local>" in override_list:
             return True
