@@ -1,6 +1,8 @@
-from typing import Union
+from typing import Union, Tuple, List, Dict
 import os.path as osp
 import configparser
+
+import NetToolKit.local_info
 
 
 class ConfigManager:
@@ -75,4 +77,38 @@ class IniConfigManager(ConfigManager):
         config.set("Cloudflare", "zone_id", ZONE_ID)
         config.set("Cloudflare", "record_id", RECORD_ID)
         config.set("Cloudflare", "dns_name", DNS_NAME)
+
+    def get_proxy_info(self) -> Dict[str, Union[str, None]]:
+        config = self.config
+        if config is None:
+            raise ValueError("Config is not provided")
+
+        proxy_mode: str
+        proxy_url: str
+        proxy_override: str
+
+        proxy_mode = config.get("Proxy", "mode", fallback="auto")
+        proxy_url = config.get("Proxy", "url", fallback=None)
+        proxy_override = config.get("Proxy", "override", fallback=None)
+        return {"proxy_mode": proxy_mode, "proxy_url": proxy_url, "proxy_override": proxy_override}
+
+    def resolve_proxy_info(self, proxy_mode: str, proxy_url: str, proxy_override: str) -> Tuple[Union[Dict[str, str], None], Union[List[str], None]]:
+        if proxy_mode is None:
+            proxy_mode = "off"
+        if proxy_mode == "auto":
+            proxy_mode = "system"
+        if proxy_mode == "off":
+            return None, None
+        elif proxy_mode == "system":
+            proxy_url, proxy_override = NetToolKit.local_info.get_windows_proxy_settings()
+            if proxy_url is None:
+                proxy_override = None
+            return proxy_url, proxy_override
+        elif proxy_mode == "manual":
+            return NetToolKit.local_info.resolve_proxies_dict_from_string(proxy_url), proxy_override.split(";") if proxy_override else None
+        else:
+            raise ValueError(f"Invalid proxy mode: {proxy_mode}")
+
+    def get_resolved_proxy_info(self):
+        return self.resolve_proxy_info(**self.get_proxy_info())
 

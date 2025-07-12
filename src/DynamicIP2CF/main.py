@@ -12,7 +12,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Update Cloudflare DNS record IP")
     parser.add_argument("--cli-mode", action="store_true", help="Run in CLI mode")
     parser.add_argument("--cli-automated", action="store_true", help="Run in CLI automated mode")
-    parser.add_argument("--read-config-ini", action="store_true", help="Read config.ini file")
+    parser.add_argument("--read-config-ini", type=str, action="store", help="Read .ini format config file")
     parser.add_argument("--ip-version", type=str, help="IP version, should be v4 or v6")
     parser.add_argument("--ip", type=str, help="IP address to update")
     parser.add_argument("--api-token", type=str, help="Cloudflare API token")
@@ -27,8 +27,9 @@ if __name__ == "__main__":
 
     flag_cli_mode = args.cli_mode
     flag_cli_automated = args.cli_automated
-    flag_read_config_ini = args.read_config_ini
     flag_generate_config_ini = args.generate_config_ini
+
+    read_config_ini_str = args.read_config_ini
 
     record_info: Dict[str, str] = {}
     record_info_list = []
@@ -38,46 +39,57 @@ if __name__ == "__main__":
         common.iniConfigManager.generate_config_file()
         exit(0)
 
-    # 准备解析代理
-    proxy_mode = args.proxy_mode
-    proxy_url = args.proxy_url
-    used_proxies = None
-    override_list = args.override_list
+    config_ini_path: str = read_config_ini_str
 
-    print(f"proxy_mode: {proxy_mode}, proxy_url: {proxy_url}, override_list: {override_list}")
+    if not read_config_ini_str:
+        # 为GUI模式启用缺省配置文件名
+        if not flag_cli_mode:
+            config_ini_path = common.config_ini_path
+        else:
+            print("Warning: no .ini format config file is loaded.")
 
-    if proxy_mode == "auto":
-        proxy_mode = "system"
-    if proxy_mode == "manual":
-        if proxy_url is None:
-            raise ValueError("Error: proxy URL is required in manual proxy mode.")
-        used_proxies = resolve_proxies_dict_from_string(proxy_url)
-    elif proxy_mode == "system":
-        used_proxies, override_list = get_windows_proxy_settings()
-    elif proxy_mode == "off":
-        used_proxies = None
-        override_list = None
-    else:
-        raise ValueError("Error: invalid proxy mode.")
+    if config_ini_path:
+        common.iniConfigManager = common.IniConfigManager(config_ini_path)
+        common.iniConfigManager.read_config_file()
+        record_info = common.iniConfigManager.get_record_info()
 
-    print(f"proxy_mode: {proxy_mode}, used_proxies: {used_proxies}, override_list: {override_list}")
-
+    common.resource_manager = common.ResourceManager()
+    common.post_init_resource_manager()
 
     if flag_cli_mode:
         retv: Union[bool, SupportsInt] = 0
+
+        # 准备解析代理
+        proxy_mode = args.proxy_mode
+        proxy_url = args.proxy_url
+        used_proxies = None
+        override_list = args.override_list
+
+        if proxy_mode == "auto":
+            proxy_mode = "system"
+        if proxy_mode == "manual":
+            if proxy_url is None:
+                raise ValueError("Error: proxy URL is required in manual proxy mode.")
+            used_proxies = resolve_proxies_dict_from_string(proxy_url)
+        elif proxy_mode == "system":
+            used_proxies, override_list = get_windows_proxy_settings()
+        elif proxy_mode == "off":
+            used_proxies = None
+            override_list = None
+        else:
+            raise ValueError("Error: invalid proxy mode.")
+
+        print(f"proxy_mode: {proxy_mode}, used_proxies: {used_proxies}, override_list: {override_list}")
 
         if flag_cli_automated:
             # cli自动模式
 
             required_args = cf_required_info
 
-            if flag_read_config_ini:
-                common.iniConfigManager = common.IniConfigManager(common.config_ini_path)
-                common.iniConfigManager.read_config_file()
-                record_info = common.iniConfigManager.get_record_info()
-            else:
-                for arg in required_args:
-                    record_info[arg] = getattr(args, arg)
+            for arg in required_args:
+                arg_value = getattr(args, arg)
+                if arg_value is not None:
+                    record_info[arg] = arg_value
 
             # 检查必要参数是否存在
             for arg in required_args:
@@ -108,5 +120,9 @@ if __name__ == "__main__":
     else:
         # GUI模式
         import DynamicIP2CF.GUI.main as gui_main
-        gui_main.main()
-        pass
+        # gui_main.main()
+
+        app = gui_main.QApplication([])
+        window = gui_main.MainWindow()
+        window.show()
+        app.exec()

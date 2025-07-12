@@ -6,7 +6,7 @@ import ipaddress
 
 # system_encoding: str
 import winreg
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Union
 
 
 def get_all_local_ip_v4():
@@ -188,24 +188,30 @@ def get_all_local_ip_non_local():
     return ip_list
 
 
-def resolve_proxies_dict_from_string(proxy_string: str) -> Dict[str, str]:
+def resolve_proxies_dict_from_string(proxy_string: str) -> Union[Dict[str, str], None]:
     proxies = {}
     if proxy_string:
         if "=" in proxy_string:
-            # http=...;https=...
+            # http=...;https=...;socks5=...;socks5h=...
             for part in proxy_string.split(";"):
                 proto, addr = part.split("=")
-                proxies[proto] = f"http://{addr}"
+                if "://" not in addr:
+                    addr = f"http://{addr}"
+                proxies[proto] = f"{addr}"
         else:
             # 同一个代理给所有协议
+            if "://" not in proxy_string:
+                proxy_string = f"http://{proxy_string}"
             proxies = {
-                "http": f"http://{proxy_string}",
-                "https": f"http://{proxy_string}"
+                "http": f"{proxy_string}",
+                "https": f"{proxy_string}"
             }
+    else:
+        return None
     return proxies
 
 
-def get_windows_proxy_settings() -> Tuple[Dict[str, str], List[str]]:
+def get_windows_proxy_settings() -> Tuple[Union[Dict[str, str], None], Union[List[str], None]]:
     proxy_enable: int = 0
     proxy_server: str = ""
     proxy_override: str = ""
@@ -217,16 +223,16 @@ def get_windows_proxy_settings() -> Tuple[Dict[str, str], List[str]]:
             proxy_server, _ = winreg.QueryValueEx(key, "ProxyServer")
             proxy_override, _ = winreg.QueryValueEx(key, "ProxyOverride")
 
-            proxies = {}
+            proxies = None
             if proxy_enable == 1 and proxy_server:
                 proxies = resolve_proxies_dict_from_string(proxy_server)
             else:
                 proxy_override = ""
     except Exception as e:
         print("读取系统代理失败:", e)
-        return {}, []
+        return None, None
 
-    return proxies, proxy_override.split(";") if proxy_override else []
+    return proxies, proxy_override.split(";") if proxy_override else None
 
 
 def host_matches_override(host, override_list):

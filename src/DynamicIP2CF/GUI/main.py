@@ -1,4 +1,5 @@
 import ipaddress
+import sys
 from typing import List, Tuple, Union
 
 from PySide6.QtWidgets import QApplication, QMainWindow, QFrame, QWidget, QListWidget, QListWidgetItem, QHBoxLayout, QVBoxLayout, QLabel, QPushButton, QSizePolicy, QGroupBox
@@ -14,23 +15,39 @@ from DynamicIP2CF.GUI.MyQtHelper import MyQWindowHelper
 from DynamicIP2CF.GUI import ConfigureDialog, utils as gui_utils
 
 
+def load_resource_manager():
+    global Rsv, RsvP
+    if "Rsv" not in globals() or "RsvP" not in globals():
+        module = sys.modules["DynamicIP2CF.common"]
+        if hasattr(module, "RsvP"):
+            from DynamicIP2CF.common import Rsv, RsvP
+        else:
+            raise Exception("Resource manager not initialized")
+    else:
+        # print("Rsv and RsvP found.")
+        pass
+
+
 class MainWindow(QMainWindow):
 
     window_shown = Signal()
     widget_pixmap_resize_pairs: List[Tuple[QWidget, QPixmap]]
 
     def __init__(self, parent=None):
-        super().__init__()
+        super().__init__(parent=parent)
+
+        load_resource_manager()
+
         self.widget_pixmap_resize_pairs = []
-        self.itemdrop_loop_back_ip_v4 = "127.0.0.1"
-        self.itemdrop_loop_back_ip_v6 = "::1"
+        # self.itemdrop_loop_back_ip_v4 = "127.0.0.1"
+        # self.itemdrop_loop_back_ip_v6 = "::1"
         self.itemdrop_document_ip = "2001:db8::"
-        self.itemdrop_loop_back_ip_v4_str = "Drop IPv4 with: [{ip}]".format(ip=self.itemdrop_loop_back_ip_v4)
-        self.itemdrop_loop_back_ip_v6_str = "Drop IPv6 with: [{ip}]".format(ip=self.itemdrop_loop_back_ip_v6)
+        # self.itemdrop_loop_back_ip_v4_str = "Drop IPv4 with: [{ip}]".format(ip=self.itemdrop_loop_back_ip_v4)
+        # self.itemdrop_loop_back_ip_v6_str = "Drop IPv6 with: [{ip}]".format(ip=self.itemdrop_loop_back_ip_v6)
         self.itemdrop_document_ip_str = "Drop IPv6 with Documentation Address: [{ip}]".format(ip=self.itemdrop_document_ip)
         self.list_dict = {
-            self.itemdrop_loop_back_ip_v4_str: self.itemdrop_loop_back_ip_v4,
-            self.itemdrop_loop_back_ip_v6_str: self.itemdrop_loop_back_ip_v6,
+            # self.itemdrop_loop_back_ip_v4_str: self.itemdrop_loop_back_ip_v4,
+            # self.itemdrop_loop_back_ip_v6_str: self.itemdrop_loop_back_ip_v6,
             self.itemdrop_document_ip_str: self.itemdrop_document_ip
         }
 
@@ -65,13 +82,6 @@ class MainWindow(QMainWindow):
 
         self.main_layout = QHBoxLayout(self.main_widget)
 
-        # self.main_widget.setStyleSheet("""
-        #     QWidget#MainWidget {{
-        #         background-image: url("{main_window_bg}");
-        #         background-repeat: no-repeat;
-        #         background-position: center;
-        #     }}
-        #     """.format(main_window_bg=RsvP(R.image.main_window_bg)))
         self.main_window_bg_pixmap = QPixmap(RsvP(R.image.main_window_bg))
         self.main_window_bg_palette = QPalette()
         # self.main_window_bg_palette.setBrush(QPalette.Window, QBrush(self.main_window_bg_pixmap))
@@ -179,10 +189,10 @@ class MainWindow(QMainWindow):
         for ip in ip_list:
             self.list_widget.addItem(ip)
 
-        item_loop_back_v4 = QListWidgetItem(self.itemdrop_loop_back_ip_v4_str)
-        self.list_widget.addItem(item_loop_back_v4)
-        item_loop_back_v6 = QListWidgetItem(self.itemdrop_loop_back_ip_v6_str)
-        self.list_widget.addItem(item_loop_back_v6)
+        # item_loop_back_v4 = QListWidgetItem(self.itemdrop_loop_back_ip_v4_str)
+        # self.list_widget.addItem(item_loop_back_v4)
+        # item_loop_back_v6 = QListWidgetItem(self.itemdrop_loop_back_ip_v6_str)
+        # self.list_widget.addItem(item_loop_back_v6)
         item_document_ip = QListWidgetItem(self.itemdrop_document_ip_str)
         self.list_widget.addItem(item_document_ip)
 
@@ -216,7 +226,7 @@ class MainWindow(QMainWindow):
         status_code = None
         result_text = ""
 
-        used_proxies, override_list = NetToolKit.local_info.get_windows_proxy_settings()
+        used_proxies, override_list = common.iniConfigManager.get_resolved_proxy_info()
         if not used_proxies:
             used_proxies = None
             override_list = None

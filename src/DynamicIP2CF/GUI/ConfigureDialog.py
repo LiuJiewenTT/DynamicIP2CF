@@ -122,7 +122,7 @@ class ConfigureDialog(QDialog):
         if ip is None:
             ip = ""
         ip_version = "" if not ip else ipaddress.ip_address(ip).version
-        ip_version = "v6" if ip_version == 6 else "v4"
+        ip_version = "v4" if ip_version == 4 else "v6"
         record_info_list = [ip_version, ip, self.apiTokenEdit.text(), self.zoneIdEdit.text(), self.recordIdEdit.text(), self.dnsNameEdit.text()]
         common.iniConfigManager.update_record_info(*record_info_list)
 
