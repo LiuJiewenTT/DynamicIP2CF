@@ -2,6 +2,8 @@ from typing import Dict, Union, SupportsInt
 
 import requests
 import json
+import locale
+import os
 import argparse
 
 import DynamicIP2CF.common as common
@@ -26,12 +28,30 @@ if __name__ == "__main__":
     global Rsv, RsvP
     from DynamicIP2CF.common import Rsv, RsvP
 
-    print("example_string_of_lang: {}".format(R.string.example_string_of_lang))
-    R.string.use_lang('en_US')
-    print("example_string_of_lang: {}".format(R.string.example_string_of_lang))
-    R.string.use_lang('zh_CN')
-    print("example_string_of_lang: {}".format(R.string.example_string_of_lang))
-    exit(0)
+    locale_lang, locale_encoding = locale.getdefaultlocale()
+    env_lang = os.getenv("LANG", "").split(".")[0]
+    preferred_lang: str
+    flag_need_to_switch_lang: bool = False
+    if env_lang:
+        preferred_lang = env_lang
+        flag_need_to_switch_lang = True
+    elif not locale_lang:
+        preferred_lang = R.string.default_lang
+        flag_need_to_switch_lang = True
+        print("Warning: system language is not recognized, using default language.")
+    else:
+        if locale_lang != R.string.default_lang:
+            preferred_lang = locale_lang
+            flag_need_to_switch_lang = True
+        else:
+            flag_need_to_switch_lang = False
+            preferred_lang = R.string.default_lang
+
+    # flag_need_to_switch_lang = True
+    if flag_need_to_switch_lang:
+        R.string.use_lang(locale_lang)
+    if preferred_lang != locale_lang:
+        print("Notice: preferred language is not the same as system language.")
 
     programinfo.init_program_info()
 
@@ -59,8 +79,6 @@ if __name__ == "__main__":
 
     read_config_ini_str = args.read_config_ini
 
-    print(programinfo.programinfo_str1)
-
     record_info: Dict[str, str] = {}
     record_info_list = []
 
@@ -76,7 +94,7 @@ if __name__ == "__main__":
         if not flag_cli_mode:
             config_ini_path = common.config_ini_path
         else:
-            print("Warning: no .ini format config file is loaded.")
+            print(R.string.warning_no_ini_config_file_and_prompt_default_str.format(default_ini_config_file=common.config_ini_path))
 
     if config_ini_path:
         common.iniConfigManager = common.IniConfigManager(config_ini_path)
@@ -134,6 +152,7 @@ if __name__ == "__main__":
             exit(0 if retv else 1)
         else:
             # cli交互模式
+            print(programinfo.programinfo_str1)
             record_info_list = input_info_from_console()
             # print(f'record_info_list: ', *record_info_list)
             # retv = True
@@ -146,6 +165,7 @@ if __name__ == "__main__":
                 exit(1)
     else:
         # GUI模式
+        print(programinfo.programinfo_str1)
         import DynamicIP2CF.GUI.main as gui_main
         # gui_main.main()
 
