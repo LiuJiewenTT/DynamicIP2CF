@@ -5,11 +5,36 @@ import json
 import argparse
 
 import DynamicIP2CF.common as common
+import R
 from DynamicIP2CF import programinfo
 from DynamicIP2CF.utils_toplevel import *
 
 
+class MultiLineVersionAction(argparse.Action):
+    def __init__(self, option_strings, dest, version_text=None, **kwargs):
+        self.version_text = version_text
+        super().__init__(option_strings, dest, nargs=0, **kwargs)
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        print(self.version_text)
+        parser.exit()
+
+
 if __name__ == "__main__":
+    common.resource_manager = common.ResourceManager()
+    common.post_init_resource_manager()
+    global Rsv, RsvP
+    from DynamicIP2CF.common import Rsv, RsvP
+
+    print("example_string_of_lang: {}".format(R.string.example_string_of_lang))
+    R.string.use_lang('en_US')
+    print("example_string_of_lang: {}".format(R.string.example_string_of_lang))
+    R.string.use_lang('zh_CN')
+    print("example_string_of_lang: {}".format(R.string.example_string_of_lang))
+    exit(0)
+
+    programinfo.init_program_info()
+
     parser = argparse.ArgumentParser(description="Update Cloudflare DNS record IP")
     parser.add_argument("--cli-mode", action="store_true", help="Run in CLI mode")
     parser.add_argument("--cli-automated", action="store_true", help="Run in CLI automated mode")
@@ -24,6 +49,8 @@ if __name__ == "__main__":
     parser.add_argument("--proxy-mode", type=str, action="store", help="Proxy mode, should be auto, system, manual, or off", default="auto")
     parser.add_argument("--proxy-url", type=str, action="store", help="Proxy URL, should be like http://127.0.0.1:8888")
     parser.add_argument("--override-list", type=str, action="store", help="Override list, should be like 192.168.1.1;192.168.1.2. May not work very well.")
+    parser.add_argument("--version", action="version", version=programinfo.program_version_str)
+    parser.add_argument("--program-info", action=MultiLineVersionAction, version_text=programinfo.programinfo_str1, help="Show program information and exit")
     args = parser.parse_args()
 
     flag_cli_mode = args.cli_mode
@@ -32,7 +59,6 @@ if __name__ == "__main__":
 
     read_config_ini_str = args.read_config_ini
 
-    programinfo.init_program_info()
     print(programinfo.programinfo_str1)
 
     record_info: Dict[str, str] = {}
@@ -56,9 +82,6 @@ if __name__ == "__main__":
         common.iniConfigManager = common.IniConfigManager(config_ini_path)
         common.iniConfigManager.read_config_file()
         record_info = common.iniConfigManager.get_record_info()
-
-    common.resource_manager = common.ResourceManager()
-    common.post_init_resource_manager()
 
     if flag_cli_mode:
         retv: Union[bool, SupportsInt] = 0
