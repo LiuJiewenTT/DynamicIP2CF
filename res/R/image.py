@@ -1,1 +1,1 @@
-main_window_bg = "assets/R.jpg"
+main_window_bg = "assets/silver-gull-8028946.jpg"
