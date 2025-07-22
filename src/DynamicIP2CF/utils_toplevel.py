@@ -46,7 +46,7 @@ def cf_update_ip(ip_version: str, ip: str, API_TOKEN: str, ZONE_ID: str, RECORD_
         "name": DNS_NAME,
         "content": ip,
         "ttl": 1,
-        "proxied": True
+        "proxied": False
     }
 
     used_proxies = {}
