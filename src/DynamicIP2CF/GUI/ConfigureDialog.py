@@ -9,6 +9,7 @@ from PySide6.QtCore import Qt
 
 import R
 from DynamicIP2CF import common
+from DynamicIP2CF import programinfo
 from DynamicIP2CF.GUI import utils as gui_utils
 
 
@@ -32,7 +33,6 @@ class RecordInfoSettingsTab(QWidget):
         self.__init_layout()
 
     def __init_layout(self):
-
 
         self.gridLayout = QGridLayout(self)
         self.gridLayout.addWidget(QLabel("API Token: "), 0, 0)
@@ -80,7 +80,15 @@ class AboutTab(QWidget):
         self.__init_layout()
 
     def __init_layout(self):
-        pass
+        self.layout = QHBoxLayout(self)
+
+        self.imageLabel = QLabel(self)
+        # self.imageLabel.setPixmap(QPixmap(RsvP(R.image.)))
+        self.layout.addWidget(self.imageLabel)
+
+        self.textLabel = QLabel(self)
+        self.textLabel.setText(programinfo.programinfo_str1)
+        self.layout.addWidget(self.textLabel)
 
 
 class ConfigureDialog(QDialog):
