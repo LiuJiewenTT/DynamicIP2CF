@@ -83,7 +83,12 @@ class AboutTab(QWidget):
         self.layout = QHBoxLayout(self)
 
         self.imageLabel = QLabel(self)
-        # self.imageLabel.setPixmap(QPixmap(RsvP(R.image.)))
+        pixmap = QPixmap(RsvP(R.image.program_icon))
+        # scaled = pixmap.scaled(150, 150, Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        # self.imageLabel.setPixmap(scaled)
+        self.imageLabel.setScaledContents(True)
+        self.imageLabel.setFixedSize(150, 150)
+        self.imageLabel.setPixmap(pixmap)
         self.layout.addWidget(self.imageLabel)
 
         self.textLabel = QLabel(self)
