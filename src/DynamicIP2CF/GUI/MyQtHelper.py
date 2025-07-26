@@ -1,6 +1,7 @@
 from typing import Union
 
-from PySide6.QtWidgets import QMainWindow
+from PySide6.QtGui import QFontMetrics, Qt
+from PySide6.QtWidgets import QMainWindow, QLabel
 
 
 class MyQWindowHelper(QMainWindow):
@@ -66,3 +67,26 @@ class MyQWindowHelper(QMainWindow):
         else:
             # 设置窗口位置
             self.move(x, y)
+
+
+class SmartLabel(QLabel):
+    def __init__(self, parent=None, max_width=400, char_limit=200):
+        super().__init__(parent=parent)
+        self.max_width = max_width
+        self.char_limit = char_limit
+        self.setWordWrap(True)
+        self.setTextInteractionFlags(Qt.TextSelectableByMouse)
+        self.setStyleSheet("background: rgba(255,255,255,0); border: none;")
+
+    def setSmartText(self, text: str):
+        metrics = QFontMetrics(self.font())
+        text_width = metrics.horizontalAdvance(text)
+
+        if len(text) <= self.char_limit and text_width < self.max_width:
+            self.setWordWrap(False)
+            self.setFixedWidth(text_width + 10)
+        else:
+            self.setWordWrap(True)
+            self.setFixedWidth(self.max_width)
+
+        self.setText(text)

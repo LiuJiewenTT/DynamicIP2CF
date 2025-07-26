@@ -21,6 +21,7 @@ frontend_name = 'CloudFlare Dynamic IP Updater'
 license_type = ''
 buildin_exinfo: object
 programinfo_str1: str
+programinfo_html_str1: str
 
 
 # 以下自动生成
@@ -59,7 +60,8 @@ def ver2str(version_tuple: tuple):
 
 
 def init_program_info():
-    global builtin_exinfo, product_version_str, program_version_str, program_iconpicture_path, programinfo_str1
+    global builtin_exinfo, product_version_str, program_version_str, program_iconpicture_path, \
+        programinfo_str1, programinfo_html_str1
 
     builtin_exinfo = Builtin_ExInfo()
 
@@ -76,4 +78,13 @@ def init_program_info():
                         f'Project Link: {project_link}\n'
                         f'License Type: {license_type}\n'
                         f'{builtin_exinfo.summary_str_singleline()}\n')
+
+    programinfo_html_str1 = (f'Product Name: {product_name}<br>\n'
+                             f'FrontEnd Name: {frontend_name}<br>\n'
+                             f'Author: {author_name} &lt;<a href="mailto:{author_email}">{author_email}</a>&gt;<br>\n'
+                             f'Program Version: {program_version_str}<br>\n'
+                             f'Project Name: {project_name}<br>\n'
+                             f'Project Link: <a href="{project_link}">{project_link}</a><br>\n'
+                             f'License Type: {license_type}<br>\n'
+                             f'{builtin_exinfo.summary_str_singleline()}<br>\n')
 

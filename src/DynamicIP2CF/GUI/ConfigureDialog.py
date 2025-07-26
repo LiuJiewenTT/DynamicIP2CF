@@ -4,13 +4,14 @@ import ipaddress
 
 from PySide6.QtGui import QPixmap, QPalette, QResizeEvent
 from PySide6.QtWidgets import QApplication, QDialog, QDialogButtonBox, QLabel, QVBoxLayout, QHBoxLayout, QSizePolicy, \
-    QGridLayout, QLineEdit, QWidget, QTabWidget
+    QGridLayout, QLineEdit, QWidget, QTabWidget, QTextBrowser
 from PySide6.QtCore import Qt
 
 import R
 from DynamicIP2CF import common
 from DynamicIP2CF import programinfo
 from DynamicIP2CF.GUI import utils as gui_utils
+from DynamicIP2CF.GUI.MyQtHelper import SmartLabel
 
 
 def load_resource_manager():
@@ -91,8 +92,23 @@ class AboutTab(QWidget):
         self.imageLabel.setPixmap(pixmap)
         self.layout.addWidget(self.imageLabel)
 
-        self.textLabel = QLabel(self)
-        self.textLabel.setText(programinfo.programinfo_str1)
+        # self.textLabel = QLabel(self)
+        # self.textLabel.setText(programinfo.programinfo_str1)
+        self.textLabel = SmartLabel(self)
+        self.textLabel.setSmartText(programinfo.programinfo_html_str1)
+        self.textLabel.setTextInteractionFlags(Qt.TextBrowserInteraction)  # 启用点击超链接
+        self.textLabel.setTextFormat(Qt.RichText)  # 解析HTML
+        # self.textLabel = QTextBrowser(self)
+        self.textLabel.setOpenExternalLinks(True)
+        # self.textLabel.setHtml(programinfo.programinfo_html_str1)
+        # self.textLabel.setStyleSheet("""
+        #     QTextBrowser {
+        #         background-color: rgba(255, 255, 255, 0);
+        #         border: none;
+        #     }
+        # """)
+
+        # self.textLabel.setMinimumWidth(400)  # 可选：设置一个初始建议宽度
         self.layout.addWidget(self.textLabel)
 
 
@@ -199,6 +215,8 @@ def main():
     common.resource_manager = common.ResourceManager()
     common.post_init_resource_manager()
     from DynamicIP2CF.common import Rsv, RsvP
+
+    programinfo.init_program_info()
 
     app = QApplication()
     dialog = ConfigureDialog()
