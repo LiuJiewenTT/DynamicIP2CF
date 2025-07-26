@@ -4,7 +4,7 @@ from typing import List, Tuple, Union
 
 from PySide6.QtWidgets import QApplication, QMainWindow, QFrame, QWidget, QListWidget, QListWidgetItem, QHBoxLayout, QVBoxLayout, QLabel, QPushButton, QSizePolicy, QGroupBox
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QShowEvent, QResizeEvent, QPixmap, QPalette, QBrush
+from PySide6.QtGui import QShowEvent, QResizeEvent, QPixmap, QPalette, QBrush, QIcon
 
 import NetToolKit.local_info
 import R
@@ -70,6 +70,8 @@ class MainWindow(QMainWindow):
 
     def __init_layout(self):
         self.setWindowTitle("{program_name} (Cloudflare DDNS更新工具)".format(program_name=common.program_name))
+        self.window_icon = QIcon(RsvP(R.image.program_icon))
+        self.setWindowIcon(self.window_icon)
         self.resize(600, 300)
         self.setMinimumSize(600, 300)
 
