@@ -2,7 +2,7 @@ import sys
 from typing import Union, List, Tuple, Dict
 import ipaddress
 
-from PySide6.QtGui import QPixmap, QPalette, QResizeEvent
+from PySide6.QtGui import QPixmap, QPalette, QResizeEvent, QShowEvent
 from PySide6.QtWidgets import QApplication, QDialog, QDialogButtonBox, QLabel, QVBoxLayout, QHBoxLayout, QSizePolicy, \
     QGridLayout, QLineEdit, QWidget, QTabWidget, QTextBrowser
 from PySide6.QtCore import Qt
@@ -11,7 +11,6 @@ import R
 from DynamicIP2CF import common
 from DynamicIP2CF import programinfo
 from DynamicIP2CF.GUI import utils as gui_utils
-from DynamicIP2CF.GUI.MyQtHelper import SmartLabel
 
 
 def load_resource_manager():
@@ -40,6 +39,9 @@ class RecordInfoSettingsTab(QWidget):
         self.gridLayout.addWidget(QLabel("Zone ID: "), 1, 0)
         self.gridLayout.addWidget(QLabel("Record ID: "), 2, 0)
         self.gridLayout.addWidget(QLabel("DNS Name: "), 3, 0)
+
+        for i in range(4):
+            self.gridLayout.itemAtPosition(i, 0).widget().setProperty("class-Transparent-Background", True)
 
         _, _, api_token, zone_id, record_id, dns_name = common.iniConfigManager.get_record_info().values()
 
@@ -80,8 +82,15 @@ class AboutTab(QWidget):
         super().__init__(parent)
         self.__init_layout()
 
+    def showEvent(self, event: QShowEvent) -> None:
+        super().showEvent(event)
+        if self.textLabel.minimumWidth() == 0:
+            self.textLabel.setMinimumWidth(self.textLabel.width() + 20)
+            self.textLabel.adjustSize()
+
     def __init_layout(self):
         self.layout = QHBoxLayout(self)
+        self.layout.setSpacing(15)
 
         self.imageLabel = QLabel(self)
         pixmap = QPixmap(RsvP(R.image.program_icon))
@@ -92,12 +101,14 @@ class AboutTab(QWidget):
         self.imageLabel.setPixmap(pixmap)
         self.layout.addWidget(self.imageLabel)
 
-        # self.textLabel = QLabel(self)
-        # self.textLabel.setText(programinfo.programinfo_str1)
-        self.textLabel = SmartLabel(self)
-        self.textLabel.setSmartText(programinfo.programinfo_html_str1)
+        self.textLabel = QLabel(self)
+        self.textLabel.setText(f"""
+            <div style="line-height: 1.5;">
+                {programinfo.programinfo_html_str1}
+            </div>""")
         self.textLabel.setTextInteractionFlags(Qt.TextBrowserInteraction)  # 启用点击超链接
         self.textLabel.setTextFormat(Qt.RichText)  # 解析HTML
+        self.textLabel.setProperty("class-Transparent-Background", True)
         # self.textLabel = QTextBrowser(self)
         self.textLabel.setOpenExternalLinks(True)
         # self.textLabel.setHtml(programinfo.programinfo_html_str1)

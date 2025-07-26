@@ -120,8 +120,10 @@ class MainWindow(QMainWindow):
         self.status_widget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Minimum)
         self.info_group_layout.addWidget(self.status_widget, alignment=Qt.AlignLeft | Qt.AlignBottom)
         self.status_label_title = QLabel("状态：", alignment=Qt.AlignLeft | Qt.AlignBottom)
+        self.status_label_title.setProperty("class-Transparent-Background", True)
         self.status_layout.addWidget(self.status_label_title)
         self.status_label = QLabel("就绪", alignment=Qt.AlignLeft | Qt.AlignBottom)
+        self.status_label.setProperty("class-Transparent-Background", True)
         self.status_layout.addWidget(self.status_label)
 
         # Result label
@@ -130,8 +132,10 @@ class MainWindow(QMainWindow):
         self.result_widget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Minimum)
         self.info_group_layout.addWidget(self.result_widget, alignment=Qt.AlignLeft | Qt.AlignBottom)
         self.result_label_title = QLabel("结果信息：", alignment=Qt.AlignLeft | Qt.AlignBottom)
+        self.result_label_title.setProperty("class-Transparent-Background", True)
         self.result_layout.addWidget(self.result_label_title)
         self.result_label = QLabel("空", alignment=Qt.AlignLeft | Qt.AlignBottom)
+        self.result_label.setProperty("class-Transparent-Background", True)
         self.result_layout.addWidget(self.result_label)
 
         # Configure button
