@@ -27,7 +27,7 @@ string_dict = {
 # warning_no_ini_config_file_and_prompt_default_str = "警告: 未找到配置文件。提示：默认配置文件是 {default_ini_config_file}。"
 
 namespace: Namespace
-# if not getattr(sys.modules[__name__], "namespace", None):
-#     namespace = Namespace(**string_dict)
-namespace = Namespace(**string_dict)
+if not getattr(sys.modules[__name__], "namespace", None):
+    namespace = Namespace(**string_dict)
+# namespace = Namespace(**string_dict)
 # Errors

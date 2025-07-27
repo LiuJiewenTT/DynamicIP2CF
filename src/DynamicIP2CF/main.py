@@ -53,9 +53,15 @@ if __name__ == "__main__":
     if preferred_lang != locale_lang:
         print("Notice: preferred language is not the same as system language.")
 
-    R.string.use_lang('zh_CN')
+    R.string.use_lang('zh_CN')    # 测试用
     print(R.string.config.ini.warnings.no_ini_config_file_and_prompt_default_str.format(
-        default_ini_config_file=common.config_ini_path))
+        default_ini_config_file=common.config_ini_path))  # 测试用
+    R.string.use_lang('en_US')  # 测试用
+    print(R.string.config.ini.warnings.no_ini_config_file_and_prompt_default_str.format(
+        default_ini_config_file=common.config_ini_path))  # 测试用
+    R.string.use_lang('zh_CN')  # 测试用
+    print(R.string.config.ini.warnings.no_ini_config_file_and_prompt_default_str.format(
+        default_ini_config_file=common.config_ini_path))  # 测试用
 
     programinfo.init_program_info()
 
