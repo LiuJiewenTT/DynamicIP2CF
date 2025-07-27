@@ -40,8 +40,8 @@ class RecordInfoSettingsTab(QWidget):
         self.gridLayout.addWidget(QLabel("Record ID: "), 2, 0)
         self.gridLayout.addWidget(QLabel("DNS Name: "), 3, 0)
 
-        for i in range(4):
-            self.gridLayout.itemAtPosition(i, 0).widget().setProperty("class-Transparent-Background", True)
+        # for i in range(4):
+        #     self.gridLayout.itemAtPosition(i, 0).widget().setProperty("class-Transparent-Background", True)
 
         _, _, api_token, zone_id, record_id, dns_name = common.iniConfigManager.get_record_info().values()
 
@@ -108,7 +108,7 @@ class AboutTab(QWidget):
             </div>""")
         self.textLabel.setTextInteractionFlags(Qt.TextBrowserInteraction)  # 启用点击超链接
         self.textLabel.setTextFormat(Qt.RichText)  # 解析HTML
-        self.textLabel.setProperty("class-Transparent-Background", True)
+        # self.textLabel.setProperty("class-Transparent-Background", True)
         # self.textLabel = QTextBrowser(self)
         self.textLabel.setOpenExternalLinks(True)
         # self.textLabel.setHtml(programinfo.programinfo_html_str1)
@@ -172,6 +172,7 @@ class ConfigureDialog(QDialog):
         self.setAutoFillBackground(True)
 
         self.overlay = QLabel(self)
+        self.overlay.setProperty("class-overlay", True)
         # self.overlay.setStyleSheet("background-color: rgba(255, 255, 255, 180);")
 
         self.tabsWidget = QTabWidget(self)
