@@ -38,7 +38,7 @@ if __name__ == "__main__":
     elif not locale_lang:
         preferred_lang = R.string.default_lang
         flag_need_to_switch_lang = True
-        print("Warning: system language is not recognized, using default language.")
+        print(R.string.language.warnings.system_lang_not_recognized)
     else:
         if locale_lang != R.string.default_lang:
             preferred_lang = locale_lang
@@ -51,36 +51,36 @@ if __name__ == "__main__":
     if flag_need_to_switch_lang:
         R.string.use_lang(locale_lang)
     if preferred_lang != locale_lang:
-        print("Notice: preferred language is not the same as system language.")
+        print(R.string.language.notices.preferred_lang_not_same_as_system_lang)
 
-    R.string.use_lang('zh_CN')    # 测试用
-    print(R.string.config.ini.warnings.no_ini_config_file_and_prompt_default_str.format(
-        default_ini_config_file=common.config_ini_path))  # 测试用
-    R.string.use_lang('en_US')  # 测试用
-    print(R.string.config.ini.warnings.no_ini_config_file_and_prompt_default_str.format(
-        default_ini_config_file=common.config_ini_path))  # 测试用
-    R.string.use_lang('zh_CN')  # 测试用
-    print(R.string.config.ini.warnings.no_ini_config_file_and_prompt_default_str.format(
-        default_ini_config_file=common.config_ini_path))  # 测试用
+    # R.string.use_lang('zh_CN')    # 测试用
+    # print(R.string.config.ini.warnings.no_file_and_prompt_default.format(
+    #     default_ini_config_file=common.config_ini_path))  # 测试用
+    # R.string.use_lang('en_US')  # 测试用
+    # print(R.string.config.ini.warnings.no_file_and_prompt_default.format(
+    #     default_ini_config_file=common.config_ini_path))  # 测试用
+    # R.string.use_lang('zh_CN')  # 测试用
+    # print(R.string.config.ini.warnings.no_file_and_prompt_default.format(
+    #     default_ini_config_file=common.config_ini_path))  # 测试用
 
     programinfo.init_program_info()
 
-    parser = argparse.ArgumentParser(description="Update Cloudflare DNS record IP")
-    parser.add_argument("--cli-mode", action="store_true", help="Run in CLI mode")
-    parser.add_argument("--cli-automated", action="store_true", help="Run in CLI automated mode")
-    parser.add_argument("--read-config-ini", type=str, action="store", help="Read .ini format config file")
-    parser.add_argument("--ip-version", type=str, help="IP version, should be v4 or v6")
-    parser.add_argument("--ip", type=str, help="IP address to update")
-    parser.add_argument("--api-token", type=str, help="Cloudflare API token")
-    parser.add_argument("--zone-id", type=str, help="Cloudflare zone ID")
-    parser.add_argument("--record-id", type=str, help="Cloudflare DNS record ID")
-    parser.add_argument("--dns-name", type=str, help="DNS name to update")
-    parser.add_argument("--generate-config-ini", action="store_true", help="Generate config.ini file")
-    parser.add_argument("--proxy-mode", type=str, action="store", help="Proxy mode, should be auto, system, manual, or off", default="auto")
-    parser.add_argument("--proxy-url", type=str, action="store", help="Proxy URL, should be like http://127.0.0.1:8888")
-    parser.add_argument("--override-list", type=str, action="store", help="Override list, should be like 192.168.1.1;192.168.1.2. May not work very well.")
+    parser = argparse.ArgumentParser(description=R.string.cli.parser.description)
+    parser.add_argument("--cli-mode", action="store_true", help=R.string.cli.parser.options_help.cli_mode)
+    parser.add_argument("--cli-automated", action="store_true", help=R.string.cli.parser.options_help.cli_automated)
+    parser.add_argument("--read-config-ini", type=str, action="store", help=R.string.cli.parser.options_help.read_config_ini)
+    parser.add_argument("--ip-version", type=str, help=R.string.cli.parser.options_help.ip_version)
+    parser.add_argument("--ip", type=str, help=R.string.cli.parser.options_help.ip)
+    parser.add_argument("--api-token", type=str, help=R.string.cli.parser.options_help.api_token)
+    parser.add_argument("--zone-id", type=str, help=R.string.cli.parser.options_help.zone_id)
+    parser.add_argument("--record-id", type=str, help=R.string.cli.parser.options_help.record_id)
+    parser.add_argument("--dns-name", type=str, help=R.string.cli.parser.options_help.dns_name)
+    parser.add_argument("--generate-config-ini", action="store_true", help=R.string.cli.parser.options_help.generate_config_ini)
+    parser.add_argument("--proxy-mode", type=str, action="store", default="auto", help=R.string.cli.parser.options_help.proxy_mode)
+    parser.add_argument("--proxy-url", type=str, action="store", help=R.string.cli.parser.options_help.proxy_url)
+    parser.add_argument("--override-list", type=str, action="store", help=R.string.cli.parser.options_help.override_list)
     parser.add_argument("--version", action="version", version=programinfo.program_version_str)
-    parser.add_argument("--program-info", action=MultiLineVersionAction, version_text=programinfo.programinfo_str1, help="Show program information and exit")
+    parser.add_argument("--program-info", action=MultiLineVersionAction, version_text=programinfo.programinfo_str1, help=R.string.cli.parser.options_help.program_info)
     args = parser.parse_args()
 
     flag_cli_mode = args.cli_mode
@@ -104,7 +104,7 @@ if __name__ == "__main__":
         if not flag_cli_mode:
             config_ini_path = common.config_ini_path
         else:
-            print(R.string.config.ini.warnings.no_ini_config_file_and_prompt_default_str.format(default_ini_config_file=common.config_ini_path))
+            print(R.string.config.ini.warnings.no_file_and_prompt_default.format(default_ini_config_file=common.config_ini_path))
 
     if config_ini_path:
         common.iniConfigManager = common.IniConfigManager(config_ini_path)
@@ -149,7 +149,7 @@ if __name__ == "__main__":
             # 检查必要参数是否存在
             for arg in required_args:
                 if record_info.get(arg) is None:
-                    print(f"Error: {arg} is required in CLI automated mode.")
+                    print("Error: {arg} is required in CLI automated mode.".format(arg=arg))
                     exit(1)
 
             record_info_list = record_info.values()

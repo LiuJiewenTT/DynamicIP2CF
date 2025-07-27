@@ -25,7 +25,7 @@ def use_lang(lang, force_load=False):
         # print(language_changed_to_str1.format(lang=lang, module=module))
         print(package.language.language_changed_to_str2.format(last_lang=last_lang, lang=lang, module_name=module_name))
     else:
-        print(package.language.language_loaded_no_switch_str.format(lang=lang))
+        print(package.language.language_loaded_no_switch.format(lang=lang))
 
 
 class Namespace(argparse.Namespace.__base__):
