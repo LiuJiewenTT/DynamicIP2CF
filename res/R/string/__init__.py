@@ -18,16 +18,15 @@ def use_lang(lang, force_load=False):
     else:
         module = sys.modules[module_name]
     globals().update({
-        k: getattr(module, k)
-        for k in dir(module)
-        if not k.startswith('_')
+        k: getattr(module.namespace, k)
+        for k in module.namespace.__dict__
     })
     if switched:
         last_lang = current_used_lang
         current_used_lang = lang
         # print(language_changed_to_str1.format(lang=lang, module=module))
-        print(language_changed_to_str2.format(last_lang=last_lang, lang=lang, module_name=module_name))
+        print(language.language_changed_to_str2.format(last_lang=last_lang, lang=lang, module_name=module_name))
     else:
-        print(language_loaded_no_switch_str.format(lang=lang))
+        print(language.language_loaded_no_switch_str.format(lang=lang))
 
 

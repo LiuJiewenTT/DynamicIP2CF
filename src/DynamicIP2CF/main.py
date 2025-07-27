@@ -53,6 +53,10 @@ if __name__ == "__main__":
     if preferred_lang != locale_lang:
         print("Notice: preferred language is not the same as system language.")
 
+    R.string.use_lang('zh_CN')
+    print(R.string.config.ini.warnings.no_ini_config_file_and_prompt_default_str.format(
+        default_ini_config_file=common.config_ini_path))
+
     programinfo.init_program_info()
 
     parser = argparse.ArgumentParser(description="Update Cloudflare DNS record IP")
@@ -94,7 +98,7 @@ if __name__ == "__main__":
         if not flag_cli_mode:
             config_ini_path = common.config_ini_path
         else:
-            print(R.string.warning_no_ini_config_file_and_prompt_default_str.format(default_ini_config_file=common.config_ini_path))
+            print(R.string.config.ini.warnings.no_ini_config_file_and_prompt_default_str.format(default_ini_config_file=common.config_ini_path))
 
     if config_ini_path:
         common.iniConfigManager = common.IniConfigManager(config_ini_path)
