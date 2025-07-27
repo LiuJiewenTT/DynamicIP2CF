@@ -10,8 +10,6 @@ import NetToolKit.local_info
 import R
 from DynamicIP2CF import common
 from DynamicIP2CF.utils_toplevel import cf_update_ip
-from DynamicIP2CF.GUI.MyQtHelper import MyQWindowHelper
-
 from DynamicIP2CF.GUI import ConfigureDialog, utils as gui_utils
 
 
@@ -93,13 +91,11 @@ class MainWindow(QMainWindow):
 
         self.overlay = QLabel(self.main_widget)
         self.overlay.setProperty("class-overlay", True)
-        # self.overlay.setStyleSheet("background-color: rgba(255, 255, 255, 180);")
 
         # Left side list widget
         self.list_widget = QListWidget()
         self.list_widget.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.list_widget.setFixedWidth(350)  # Adjust width to fit IPv6 address length
-        # self.list_widget.setStyleSheet("background-color: rgba(255, 255, 255, 180);")
         self.main_layout.addWidget(self.list_widget)
 
         # Right side layout
@@ -109,36 +105,32 @@ class MainWindow(QMainWindow):
         self.main_layout.addWidget(self.right_side_widget)
 
         # Info Block
-        # info_frame = QFrame()
-        self.info_group = QGroupBox("信息")
-        # info_frame.setFrameStyle(QFrame.Panel | QFrame.Sunken)
-        # info_frame.setLineWidth(1)
-        self.info_group.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Minimum)
-        self.info_group_layout = QVBoxLayout(self.info_group)
-        self.right_side_layout.addWidget(self.info_group)
+        self.info_frame = QFrame()
+        # self.info_group = QGroupBox("信息")
+        self.info_frame.setFrameStyle(QFrame.Panel | QFrame.Sunken)
+        self.info_frame.setLineWidth(1)
+        self.info_frame.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Minimum)
+        self.info_frame_layout = QVBoxLayout(self.info_frame)
+        self.right_side_layout.addWidget(self.info_frame)
 
         # Status label
         self.status_widget = QWidget()
         self.status_layout = QHBoxLayout(self.status_widget)
         self.status_widget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Minimum)
-        self.info_group_layout.addWidget(self.status_widget, alignment=Qt.AlignLeft | Qt.AlignBottom)
+        self.info_frame_layout.addWidget(self.status_widget, alignment=Qt.AlignLeft | Qt.AlignBottom)
         self.status_label_title = QLabel("状态：", alignment=Qt.AlignLeft | Qt.AlignBottom)
-        # self.status_label_title.setProperty("class-Transparent-Background", True)
         self.status_layout.addWidget(self.status_label_title)
         self.status_label = QLabel("就绪", alignment=Qt.AlignLeft | Qt.AlignBottom)
-        # self.status_label.setProperty("class-Transparent-Background", True)
         self.status_layout.addWidget(self.status_label)
 
         # Result label
         self.result_widget = QWidget()
         self.result_layout = QHBoxLayout(self.result_widget)
         self.result_widget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Minimum)
-        self.info_group_layout.addWidget(self.result_widget, alignment=Qt.AlignLeft | Qt.AlignBottom)
+        self.info_frame_layout.addWidget(self.result_widget, alignment=Qt.AlignLeft | Qt.AlignBottom)
         self.result_label_title = QLabel("结果信息：", alignment=Qt.AlignLeft | Qt.AlignBottom)
-        # self.result_label_title.setProperty("class-Transparent-Background", True)
         self.result_layout.addWidget(self.result_label_title)
         self.result_label = QLabel("空", alignment=Qt.AlignLeft | Qt.AlignBottom)
-        # self.result_label.setProperty("class-Transparent-Background", True)
         self.result_layout.addWidget(self.result_label)
 
         # Configure button

@@ -4,7 +4,7 @@ import ipaddress
 
 from PySide6.QtGui import QPixmap, QPalette, QResizeEvent, QShowEvent
 from PySide6.QtWidgets import QApplication, QDialog, QDialogButtonBox, QLabel, QVBoxLayout, QHBoxLayout, QSizePolicy, \
-    QGridLayout, QLineEdit, QWidget, QTabWidget, QTextBrowser
+    QGridLayout, QLineEdit, QWidget, QTabWidget
 from PySide6.QtCore import Qt
 
 import R
@@ -39,9 +39,6 @@ class RecordInfoSettingsTab(QWidget):
         self.gridLayout.addWidget(QLabel("Zone ID: "), 1, 0)
         self.gridLayout.addWidget(QLabel("Record ID: "), 2, 0)
         self.gridLayout.addWidget(QLabel("DNS Name: "), 3, 0)
-
-        # for i in range(4):
-        #     self.gridLayout.itemAtPosition(i, 0).widget().setProperty("class-Transparent-Background", True)
 
         _, _, api_token, zone_id, record_id, dns_name = common.iniConfigManager.get_record_info().values()
 
@@ -108,18 +105,8 @@ class AboutTab(QWidget):
             </div>""")
         self.textLabel.setTextInteractionFlags(Qt.TextBrowserInteraction)  # 启用点击超链接
         self.textLabel.setTextFormat(Qt.RichText)  # 解析HTML
-        # self.textLabel.setProperty("class-Transparent-Background", True)
-        # self.textLabel = QTextBrowser(self)
         self.textLabel.setOpenExternalLinks(True)
-        # self.textLabel.setHtml(programinfo.programinfo_html_str1)
-        # self.textLabel.setStyleSheet("""
-        #     QTextBrowser {
-        #         background-color: rgba(255, 255, 255, 0);
-        #         border: none;
-        #     }
-        # """)
 
-        # self.textLabel.setMinimumWidth(400)  # 可选：设置一个初始建议宽度
         self.layout.addWidget(self.textLabel)
 
 
@@ -173,10 +160,8 @@ class ConfigureDialog(QDialog):
 
         self.overlay = QLabel(self)
         self.overlay.setProperty("class-overlay", True)
-        # self.overlay.setStyleSheet("background-color: rgba(255, 255, 255, 180);")
 
         self.tabsWidget = QTabWidget(self)
-        # self.tabsWidget.setStyleSheet("background-color: rgba(0, 255, 255, 70);")
         self.layout.addStretch(1)
         self.layout.addWidget(self.tabsWidget)
         self.layout.addStretch(1)
@@ -189,7 +174,7 @@ class ConfigureDialog(QDialog):
             self.tabsWidget.addTab(self.tabs[tab_name], self.tabsTitle[tab_name])
 
         self.buttonBox = QDialogButtonBox(QDialogButtonBox.Save | QDialogButtonBox.Apply | QDialogButtonBox.Cancel,
-                                          self)
+                                          parent=self)
         self.buttonBox.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Maximum)
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.button(QDialogButtonBox.Apply).clicked.connect(self.on_apply)
@@ -206,12 +191,13 @@ class ConfigureDialog(QDialog):
         super().accept()
 
     def apply_config_ini(self):
+        record_tab = self.tabs["RecordInfoSettingsTab"]
         ip = self.current_selected_ip
         if ip is None:
             ip = ""
         ip_version = "" if not ip else ipaddress.ip_address(ip).version
         ip_version = "v4" if ip_version == 4 else "v6"
-        record_info_list = [ip_version, ip, self.apiTokenEdit.text(), self.zoneIdEdit.text(), self.recordIdEdit.text(), self.dnsNameEdit.text()]
+        record_info_list = [ip_version, ip, record_tab.apiTokenEdit.text(), record_tab.zoneIdEdit.text(), record_tab.recordIdEdit.text(), record_tab.dnsNameEdit.text()]
         common.iniConfigManager.update_record_info(*record_info_list)
 
 
