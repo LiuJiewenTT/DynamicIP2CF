@@ -56,8 +56,8 @@ class IniConfigManager(ConfigManager):
         API_TOKEN = config.get("Cloudflare", "api_token")
         ZONE_ID = config.get("Cloudflare", "zone_id")
         RECORD_ID = config.get("Cloudflare", "record_id")
-        DNS_NAME = config.get("Cloudflare", "dns_name")
-        return {"ip_version": ip_version, "ip": ip, "api_token": API_TOKEN, "zone_id": ZONE_ID, "record_id": RECORD_ID, "dns_name": DNS_NAME}
+        DOMAIN_NAME = config.get("Cloudflare", "domain_name")
+        return {"ip_version": ip_version, "ip": ip, "api_token": API_TOKEN, "zone_id": ZONE_ID, "record_id": RECORD_ID, "domain_name": DOMAIN_NAME}
 
     def generate_record_info(self) -> None:
         config = self.config
@@ -67,16 +67,16 @@ class IniConfigManager(ConfigManager):
         config.set("Cloudflare", "api_token", "your_api_token")
         config.set("Cloudflare", "zone_id", "your_zone_id")
         config.set("Cloudflare", "record_id", "your_record_id")
-        config.set("Cloudflare", "dns_name", "your_dns_name")
+        config.set("Cloudflare", "domain_name", "your_domain_name")
 
-    def update_record_info(self, ip_version: str, ip: str, API_TOKEN: str, ZONE_ID: str, RECORD_ID: str, DNS_NAME: str):
+    def update_record_info(self, ip_version: str, ip: str, API_TOKEN: str, ZONE_ID: str, RECORD_ID: str, DOMAIN_NAME: str):
         config = self.config
         config.set("Cloudflare", "ip_version", ip_version)
         config.set("Cloudflare", "ip", ip)
         config.set("Cloudflare", "api_token", API_TOKEN)
         config.set("Cloudflare", "zone_id", ZONE_ID)
         config.set("Cloudflare", "record_id", RECORD_ID)
-        config.set("Cloudflare", "dns_name", DNS_NAME)
+        config.set("Cloudflare", "domain_name", DOMAIN_NAME)
 
     def get_proxy_info(self) -> Dict[str, Union[str, None]]:
         config = self.config

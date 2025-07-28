@@ -33,7 +33,7 @@ string_dict = {
                 "api_token": "Cloudflare API 口令",
                 "zone_id": "Cloudflare 区域 ID",
                 "record_id": "Cloudflare DNS 记录 ID",
-                "dns_name": "要被更新的 DNS 记录的域名",
+                "domain_name": "要被更新的 DNS 记录的域名",
                 "generate_config_ini": "生成 config.ini 配置文件",
                 "proxy_mode": "网络代理模式, 可选值: auto, system, manual, off",
                 "proxy_url": "网络代理URL, 应当是类似于: http://127.0.0.1:8888 的链接",

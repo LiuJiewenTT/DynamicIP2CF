@@ -74,7 +74,7 @@ if __name__ == "__main__":
     parser.add_argument("--api-token", type=str, help=R.string.cli.parser.options_help.api_token)
     parser.add_argument("--zone-id", type=str, help=R.string.cli.parser.options_help.zone_id)
     parser.add_argument("--record-id", type=str, help=R.string.cli.parser.options_help.record_id)
-    parser.add_argument("--dns-name", type=str, help=R.string.cli.parser.options_help.dns_name)
+    parser.add_argument("--domain-name", type=str, help=R.string.cli.parser.options_help.domain_name)
     parser.add_argument("--generate-config-ini", action="store_true", help=R.string.cli.parser.options_help.generate_config_ini)
     parser.add_argument("--proxy-mode", type=str, action="store", default="auto", help=R.string.cli.parser.options_help.proxy_mode)
     parser.add_argument("--proxy-url", type=str, action="store", help=R.string.cli.parser.options_help.proxy_url)

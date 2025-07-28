@@ -40,7 +40,7 @@ class RecordInfoSettingsTab(QWidget):
         self.gridLayout.addWidget(QLabel("Record ID: "), 2, 0)
         self.gridLayout.addWidget(QLabel("DNS Name: "), 3, 0)
 
-        _, _, api_token, zone_id, record_id, dns_name = common.iniConfigManager.get_record_info().values()
+        _, _, api_token, zone_id, record_id, domain_name = common.iniConfigManager.get_record_info().values()
 
         self.apiTokenEdit = QLineEdit()
         self.apiTokenEdit.setPlaceholderText("请输入API Token")
@@ -59,7 +59,7 @@ class RecordInfoSettingsTab(QWidget):
 
         self.dnsNameEdit = QLineEdit()
         self.dnsNameEdit.setPlaceholderText("请输入DNS Name")
-        self.dnsNameEdit.setText(dns_name)
+        self.dnsNameEdit.setText(domain_name)
         self.gridLayout.addWidget(self.dnsNameEdit, 3, 1)
 
 

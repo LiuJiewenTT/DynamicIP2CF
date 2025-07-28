@@ -33,7 +33,7 @@ string_dict = {
                 "api_token": "Cloudflare API token",
                 "zone_id": "Cloudflare zone ID",
                 "record_id": "Cloudflare DNS record ID",
-                "dns_name": "DNS record's domain name to update",
+                "domain_name": "DNS record's domain name to update",
                 "generate_config_ini": "Generate config.ini file",
                 "proxy_mode": "Proxy mode, should be auto, system, manual, or off",
                 "proxy_url": "Proxy URL, should be like http://127.0.0.1:8888",
