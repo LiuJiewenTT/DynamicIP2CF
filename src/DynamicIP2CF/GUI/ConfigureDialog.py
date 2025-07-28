@@ -38,7 +38,7 @@ class RecordInfoSettingsTab(QWidget):
         self.gridLayout.addWidget(QLabel("API Token: "), 0, 0)
         self.gridLayout.addWidget(QLabel("Zone ID: "), 1, 0)
         self.gridLayout.addWidget(QLabel("Record ID: "), 2, 0)
-        self.gridLayout.addWidget(QLabel("DNS Name: "), 3, 0)
+        self.gridLayout.addWidget(QLabel("Domain Name: "), 3, 0)
 
         _, _, api_token, zone_id, record_id, domain_name = common.iniConfigManager.get_record_info().values()
 
@@ -57,10 +57,10 @@ class RecordInfoSettingsTab(QWidget):
         self.recordIdEdit.setText(record_id)
         self.gridLayout.addWidget(self.recordIdEdit, 2, 1)
 
-        self.dnsNameEdit = QLineEdit()
-        self.dnsNameEdit.setPlaceholderText("请输入DNS Name")
-        self.dnsNameEdit.setText(domain_name)
-        self.gridLayout.addWidget(self.dnsNameEdit, 3, 1)
+        self.domainNameEdit = QLineEdit()
+        self.domainNameEdit.setPlaceholderText("请输入Domain Name")
+        self.domainNameEdit.setText(domain_name)
+        self.gridLayout.addWidget(self.domainNameEdit, 3, 1)
 
 
 class MiscSettingsTab(QWidget):
@@ -222,13 +222,13 @@ class ConfigureDialog(QDialog):
         super().accept()
 
     def apply_config_ini(self):
-        record_tab = self.tabs["RecordInfoSettingsTab"]
+        record_tab = self.tabs.get("RecordInfoSettingsTab")
         ip = self.current_selected_ip
         if ip is None:
             ip = ""
         ip_version = "" if not ip else ipaddress.ip_address(ip).version
         ip_version = "v4" if ip_version == 4 else "v6"
-        record_info_list = [ip_version, ip, record_tab.apiTokenEdit.text(), record_tab.zoneIdEdit.text(), record_tab.recordIdEdit.text(), record_tab.dnsNameEdit.text()]
+        record_info_list = [ip_version, ip, record_tab.apiTokenEdit.text(), record_tab.zoneIdEdit.text(), record_tab.recordIdEdit.text(), record_tab.domainNameEdit.text()]
         common.iniConfigManager.update_record_info(*record_info_list)
 
 

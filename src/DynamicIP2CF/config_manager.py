@@ -51,12 +51,12 @@ class IniConfigManager(ConfigManager):
         if config is None:
             raise ValueError("Config is not provided")
 
-        ip_version = config.get("Cloudflare", "ip_version")
-        ip = config.get("Cloudflare", "ip")
-        API_TOKEN = config.get("Cloudflare", "api_token")
-        ZONE_ID = config.get("Cloudflare", "zone_id")
-        RECORD_ID = config.get("Cloudflare", "record_id")
-        DOMAIN_NAME = config.get("Cloudflare", "domain_name")
+        ip_version = config.get("Cloudflare", "ip_version", fallback="")
+        ip = config.get("Cloudflare", "ip", fallback="")
+        API_TOKEN = config.get("Cloudflare", "api_token", fallback="")
+        ZONE_ID = config.get("Cloudflare", "zone_id", fallback="")
+        RECORD_ID = config.get("Cloudflare", "record_id", fallback="")
+        DOMAIN_NAME = config.get("Cloudflare", "domain_name", fallback="")
         return {"ip_version": ip_version, "ip": ip, "api_token": API_TOKEN, "zone_id": ZONE_ID, "record_id": RECORD_ID, "domain_name": DOMAIN_NAME}
 
     def generate_record_info(self) -> None:
