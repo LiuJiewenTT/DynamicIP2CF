@@ -1,5 +1,5 @@
 import sys
-from typing import Union, List, Tuple, Dict
+from typing import Union, List, Tuple, Dict, TypedDict
 import ipaddress
 
 from PySide6.QtGui import QPixmap, QPalette, QResizeEvent, QShowEvent
@@ -61,6 +61,17 @@ class RecordInfoSettingsTab(QWidget):
         self.domainNameEdit.setPlaceholderText("请输入Domain Name")
         self.domainNameEdit.setText(domain_name)
         self.gridLayout.addWidget(self.domainNameEdit, 3, 1)
+
+    def apply_config_ini(self):
+        record_tab = self
+        dialog = self.parent().parent().parent()
+        ip = dialog.current_selected_ip
+        if ip is None:
+            ip = ""
+        ip_version = "" if not ip else ipaddress.ip_address(ip).version
+        ip_version = "v4" if ip_version == 4 else "v6"
+        record_info_list = [ip_version, ip, record_tab.apiTokenEdit.text(), record_tab.zoneIdEdit.text(), record_tab.recordIdEdit.text(), record_tab.domainNameEdit.text()]
+        common.iniConfigManager.update_record_info(*record_info_list)
 
 
 class MiscSettingsTab(QWidget):
@@ -144,7 +155,7 @@ class AboutTab(QWidget):
 class ConfigureDialog(QDialog):
 
     current_selected_ip: Union[str, None] = None
-    tabs: Dict[str, QWidget] = {}
+    tabs: TypedDict("ConfigureDialog_tabsDict", {"RecordInfoSettingsTab": RecordInfoSettingsTab, "MiscSettingsTab": MiscSettingsTab, "AboutTab": AboutTab, str: QWidget}) = {}
     tabsTitle: Dict[str, str] = {}
 
     def __init__(self, parent=None):
@@ -213,23 +224,15 @@ class ConfigureDialog(QDialog):
         self.layout.addWidget(self.buttonBox, alignment=Qt.AlignBottom)
 
     def accept(self):
-        self.apply_config_ini()
+        record_tab = self.tabs["RecordInfoSettingsTab"]
+        record_tab.apply_config_ini()
         common.iniConfigManager.update_config_file()
         super().accept()
 
     def on_apply(self):
-        self.apply_config_ini()
+        record_tab = self.tabs["RecordInfoSettingsTab"]
+        record_tab.apply_config_ini()
         super().accept()
-
-    def apply_config_ini(self):
-        record_tab = self.tabs.get("RecordInfoSettingsTab")
-        ip = self.current_selected_ip
-        if ip is None:
-            ip = ""
-        ip_version = "" if not ip else ipaddress.ip_address(ip).version
-        ip_version = "v4" if ip_version == 4 else "v6"
-        record_info_list = [ip_version, ip, record_tab.apiTokenEdit.text(), record_tab.zoneIdEdit.text(), record_tab.recordIdEdit.text(), record_tab.domainNameEdit.text()]
-        common.iniConfigManager.update_record_info(*record_info_list)
 
 
 def main():
