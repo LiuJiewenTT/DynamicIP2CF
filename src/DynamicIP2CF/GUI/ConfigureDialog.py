@@ -4,7 +4,7 @@ import ipaddress
 
 from PySide6.QtGui import QPixmap, QPalette, QResizeEvent, QShowEvent
 from PySide6.QtWidgets import QApplication, QDialog, QDialogButtonBox, QLabel, QVBoxLayout, QHBoxLayout, QSizePolicy, \
-    QGridLayout, QLineEdit, QWidget, QTabWidget
+    QGridLayout, QLineEdit, QWidget, QTabWidget, QPushButton
 from PySide6.QtCore import Qt
 
 import R
@@ -29,7 +29,7 @@ def load_resource_manager():
 class RecordInfoSettingsTab(QWidget):
 
     def __init__(self, parent=None):
-        super().__init__(parent)
+        super().__init__(parent=parent)
         self.__init_layout()
 
     def __init_layout(self):
@@ -66,7 +66,7 @@ class RecordInfoSettingsTab(QWidget):
 class MiscSettingsTab(QWidget):
 
     def __init__(self, parent=None):
-        super().__init__(parent)
+        super().__init__(parent=parent)
         self.__init_layout()
 
     def __init_layout(self):
@@ -76,7 +76,7 @@ class MiscSettingsTab(QWidget):
 class AboutTab(QWidget):
 
     def __init__(self, parent=None):
-        super().__init__(parent)
+        super().__init__(parent=parent)
         self.__init_layout()
 
     def showEvent(self, event: QShowEvent) -> None:
@@ -98,6 +98,10 @@ class AboutTab(QWidget):
         self.imageLabel.setPixmap(pixmap)
         self.layout.addWidget(self.imageLabel)
 
+        self.rightDetailsLayout = QVBoxLayout(self)
+        self.rightDetailsLayout.setSpacing(10)
+        self.layout.addLayout(self.rightDetailsLayout)
+
         self.textLabel = QLabel(self)
         self.textLabel.setText(f"""
             <div style="line-height: 1.5;">
@@ -106,8 +110,35 @@ class AboutTab(QWidget):
         self.textLabel.setTextInteractionFlags(Qt.TextBrowserInteraction)  # 启用点击超链接
         self.textLabel.setTextFormat(Qt.RichText)  # 解析HTML
         self.textLabel.setOpenExternalLinks(True)
+        self.rightDetailsLayout.addWidget(self.textLabel)
 
-        self.layout.addWidget(self.textLabel)
+        self.checkUpdatelayout = QHBoxLayout(self)
+        self.checkUpdateButton = QPushButton("检查更新", self)
+        self.checkUpdateButton.clicked.connect(self.check_update)
+        self.checkUpdatelayout.addWidget(self.checkUpdateButton)
+        self.rightDetailsLayout.addLayout(self.checkUpdatelayout)
+
+        self.checkUpdateResultLabel = QLabel(self)
+        self.checkUpdateResultLabel.setText("")
+        self.checkUpdateResultLabel.setTextInteractionFlags(Qt.TextBrowserInteraction)
+        self.checkUpdateResultLabel.setOpenExternalLinks(True)
+        self.checkUpdateResultLabel.setWordWrap(True)
+        self.checkUpdatelayout.addWidget(self.checkUpdateResultLabel)
+        # 设置插件在布局的权重
+        self.checkUpdatelayout.setStretchFactor(self.checkUpdateResultLabel, 1)
+
+    def check_update(self):
+        status, version_message, status_code, response_text = gui_utils.check_update_available()
+        message: str
+        if status:
+            message = "发现新版本: {new_version}".format(new_version=version_message)
+        else:
+            if version_message == "":
+                message = "检查更新失败: {error_message}".format(error_message=f"[{status_code}]: {response_text}")
+            else:
+                message = "当前已是最新版本"
+        self.checkUpdateResultLabel.setText(message)
+        gui_utils.adjust_widget_size_recursively(self.checkUpdateResultLabel)
 
 
 class ConfigureDialog(QDialog):
@@ -117,7 +148,7 @@ class ConfigureDialog(QDialog):
     tabsTitle: Dict[str, str] = {}
 
     def __init__(self, parent=None):
-        super().__init__(parent)
+        super().__init__(parent=parent)
 
         load_resource_manager()
         self.widget_pixmap_resize_pairs = []
@@ -166,9 +197,9 @@ class ConfigureDialog(QDialog):
         self.layout.addWidget(self.tabsWidget)
         self.layout.addStretch(1)
 
-        self.tabs["RecordInfoSettingsTab"] = RecordInfoSettingsTab(self)
-        self.tabs["MiscSettingsTab"] = MiscSettingsTab(self)
-        self.tabs["AboutTab"] = AboutTab(self)
+        self.tabs["RecordInfoSettingsTab"] = RecordInfoSettingsTab(parent=self.tabsWidget)
+        self.tabs["MiscSettingsTab"] = MiscSettingsTab(parent=self.tabsWidget)
+        self.tabs["AboutTab"] = AboutTab(parent=self.tabsWidget)
 
         for tab_name in self.tabs.keys():
             self.tabsWidget.addTab(self.tabs[tab_name], self.tabsTitle[tab_name])

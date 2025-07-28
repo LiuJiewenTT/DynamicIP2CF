@@ -7,6 +7,7 @@ author_email = 'liuljwtt@163.com'
 author_info: dict
 project_name = 'DynamicIP2CF'
 project_link = 'https://github.com/LiuJiewenTT/DynamicIP2CF'
+product_check_update_url = 'https://api.github.com/repos/LiuJiewenTT/DynamicIP2CF/releases/latest'
 product_name = 'CloudFlare Dynamic IP Updater'
 program_name = 'DynamicIP2CF'
 product_version = (0, 0, 1, 0)

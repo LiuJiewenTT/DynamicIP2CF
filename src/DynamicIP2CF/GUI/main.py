@@ -131,6 +131,8 @@ class MainWindow(QMainWindow):
         self.result_label_title = QLabel("结果信息：", alignment=Qt.AlignLeft | Qt.AlignBottom)
         self.result_layout.addWidget(self.result_label_title)
         self.result_label = QLabel("空", alignment=Qt.AlignLeft | Qt.AlignBottom)
+        # set result_label to be selectable
+        self.result_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
         self.result_layout.addWidget(self.result_label)
 
         # Configure button
