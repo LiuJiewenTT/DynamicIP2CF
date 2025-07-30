@@ -79,6 +79,7 @@ class MiscSettingsTab(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
         self.__init_layout()
+        self.load_values()
 
     def __init_layout(self):
         self.layout = QVBoxLayout(self)
@@ -105,10 +106,11 @@ class MiscSettingsTab(QWidget):
 
         # 创建一个按钮组来管理这些单选按钮
         self.proxyModeButtonGroup = QButtonGroup(self.proxyModeRadioGroupBox)
-        self.proxyModeButtonGroup.addButton(self.proxyModeNoProxyRadioButton)
-        self.proxyModeButtonGroup.addButton(self.proxyModeAutoRadioButton)
-        self.proxyModeButtonGroup.addButton(self.proxyModeSystemRadioButton)
-        self.proxyModeButtonGroup.addButton(self.proxyModeManualRadioButton)
+        self.proxyModeButtonGroup.addButton(self.proxyModeNoProxyRadioButton, id=0)
+        self.proxyModeButtonGroup.addButton(self.proxyModeAutoRadioButton, id=1)
+        self.proxyModeButtonGroup.addButton(self.proxyModeSystemRadioButton, id=2)
+        self.proxyModeButtonGroup.addButton(self.proxyModeManualRadioButton, id=3)
+        self.proxyModeButtonGroup.buttonClicked.connect(self.switch_proxy_mode)
 
         self.proxyModeRadioGroupBoxLayout.addWidget(self.proxyModeNoProxyRadioButton)
         self.proxyModeRadioGroupBoxLayout.addWidget(self.proxyModeAutoRadioButton)
@@ -134,6 +136,30 @@ class MiscSettingsTab(QWidget):
         self.proxyManualParamsGroupLayout.addWidget(self.proxyManualParams_proxyOverrideTextBrowser)
 
         self.proxyManualParamsGroup.setDisabled(True)
+
+    def load_values(self):
+        proxy_mode, proxy_url, proxy_override = common.iniConfigManager.get_proxy_info().values()
+        print(f"proxy_mode: {proxy_mode}, proxy_url: {proxy_url}, proxy_override: {proxy_override}")
+
+        if proxy_mode == "off":
+            self.proxyModeButtonGroup.button(0).setChecked(True)
+        elif proxy_mode == "auto":
+            self.proxyModeButtonGroup.button(1).setChecked(True)
+        elif proxy_mode == "system":
+            self.proxyModeButtonGroup.button(2).setChecked(True)
+        elif proxy_mode == "manual":
+            self.proxyModeButtonGroup.button(3).setChecked(True)
+            self.proxyManualParamsGroup.setDisabled(False)
+
+        self.proxyManualParams_proxyUrlEdit.setText(proxy_url)
+        self.proxyManualParams_proxyOverrideTextBrowser.setText(proxy_override)
+
+    def switch_proxy_mode(self, button: QRadioButton):
+        id = self.proxyModeButtonGroup.id(button)
+        if id == 3:
+            self.proxyManualParamsGroup.setDisabled(False)
+        else:
+            self.proxyManualParamsGroup.setDisabled(True)
 
 
 class AboutTab(QWidget):
