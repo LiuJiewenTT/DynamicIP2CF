@@ -88,8 +88,8 @@ class IniConfigManager(ConfigManager):
         proxy_override: str
 
         proxy_mode = config.get("Proxy", "mode", fallback="auto")
-        proxy_url = config.get("Proxy", "url", fallback=None)
-        proxy_override = config.get("Proxy", "override", fallback=None)
+        proxy_url = config.get("Proxy", "url", fallback="")
+        proxy_override = config.get("Proxy", "override", fallback="")
         return {"proxy_mode": proxy_mode, "proxy_url": proxy_url, "proxy_override": proxy_override}
 
     def resolve_proxy_info(self, proxy_mode: str, proxy_url: str, proxy_override: str) -> Tuple[Union[Dict[str, str], None], Union[List[str], None]]:

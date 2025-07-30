@@ -4,7 +4,7 @@ import ipaddress
 
 from PySide6.QtGui import QPixmap, QPalette, QResizeEvent, QShowEvent
 from PySide6.QtWidgets import QApplication, QDialog, QDialogButtonBox, QLabel, QVBoxLayout, QHBoxLayout, QSizePolicy, \
-    QGridLayout, QLineEdit, QWidget, QTabWidget, QPushButton
+    QGridLayout, QLineEdit, QWidget, QTabWidget, QPushButton, QGroupBox, QRadioButton, QButtonGroup, QTextBrowser
 from PySide6.QtCore import Qt
 
 import R
@@ -81,7 +81,59 @@ class MiscSettingsTab(QWidget):
         self.__init_layout()
 
     def __init_layout(self):
-        pass
+        self.layout = QVBoxLayout(self)
+        self.layout.setSpacing(15)
+
+        self.proxyGroup = QGroupBox(parent=self, title="Proxy Settings")
+        self.layout.addWidget(self.proxyGroup)
+
+        self.proxyGroupLayout = QHBoxLayout(self.proxyGroup)
+        self.proxyGroupLayout.setSpacing(15)
+        self.proxyGroup.setLayout(self.proxyGroupLayout)
+
+        self.proxyModeRadioGroupBox = QGroupBox(parent=self.proxyGroup, title="Proxy Mode")
+        self.proxyGroupLayout.addWidget(self.proxyModeRadioGroupBox)
+
+        self.proxyModeRadioGroupBoxLayout = QVBoxLayout(self.proxyModeRadioGroupBox)
+        self.proxyModeRadioGroupBoxLayout.setSpacing(15)
+        self.proxyModeRadioGroupBox.setLayout(self.proxyModeRadioGroupBoxLayout)
+
+        self.proxyModeNoProxyRadioButton = QRadioButton("No Proxy", parent=self.proxyModeRadioGroupBox)
+        self.proxyModeAutoRadioButton = QRadioButton("Auto Proxy", parent=self.proxyModeRadioGroupBox)
+        self.proxyModeSystemRadioButton = QRadioButton("System Proxy", parent=self.proxyModeRadioGroupBox)
+        self.proxyModeManualRadioButton = QRadioButton("Manual Proxy", parent=self.proxyModeRadioGroupBox)
+
+        # 创建一个按钮组来管理这些单选按钮
+        self.proxyModeButtonGroup = QButtonGroup(self.proxyModeRadioGroupBox)
+        self.proxyModeButtonGroup.addButton(self.proxyModeNoProxyRadioButton)
+        self.proxyModeButtonGroup.addButton(self.proxyModeAutoRadioButton)
+        self.proxyModeButtonGroup.addButton(self.proxyModeSystemRadioButton)
+        self.proxyModeButtonGroup.addButton(self.proxyModeManualRadioButton)
+
+        self.proxyModeRadioGroupBoxLayout.addWidget(self.proxyModeNoProxyRadioButton)
+        self.proxyModeRadioGroupBoxLayout.addWidget(self.proxyModeAutoRadioButton)
+        self.proxyModeRadioGroupBoxLayout.addWidget(self.proxyModeSystemRadioButton)
+        self.proxyModeRadioGroupBoxLayout.addWidget(self.proxyModeManualRadioButton)
+
+        self.proxyManualParamsGroup = QGroupBox(parent=self.proxyGroup, title="Manual Proxy Settings")
+        self.proxyGroupLayout.addWidget(self.proxyManualParamsGroup)
+
+        self.proxyManualParamsGroupLayout = QVBoxLayout(self.proxyManualParamsGroup)
+        self.proxyManualParamsGroup.setLayout(self.proxyManualParamsGroupLayout)
+
+        self.proxyManualParams_proxyUrlLabel = QLabel("Proxy URL: ", parent=self.proxyManualParamsGroup)
+        self.proxyManualParams_proxyUrlEdit = QLineEdit(parent=self.proxyManualParamsGroup)
+
+        self.proxyManualParams_proxyOverrideLabel = QLabel("Proxy Override: ", parent=self.proxyManualParamsGroup)
+        self.proxyManualParams_proxyOverrideTextBrowser = QTextBrowser(parent=self.proxyManualParamsGroup)
+        self.proxyManualParams_proxyOverrideTextBrowser.setMaximumHeight(100)
+
+        self.proxyManualParamsGroupLayout.addWidget(self.proxyManualParams_proxyUrlLabel)
+        self.proxyManualParamsGroupLayout.addWidget(self.proxyManualParams_proxyUrlEdit)
+        self.proxyManualParamsGroupLayout.addWidget(self.proxyManualParams_proxyOverrideLabel)
+        self.proxyManualParamsGroupLayout.addWidget(self.proxyManualParams_proxyOverrideTextBrowser)
+
+        self.proxyManualParamsGroup.setDisabled(True)
 
 
 class AboutTab(QWidget):
