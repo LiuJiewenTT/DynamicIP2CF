@@ -41,6 +41,26 @@ string_dict = {
                 "program_info": "Show program information and exit"
             }
         }
+    },
+    "gui": {
+        "configure_dialog": {
+            "misc_settings_tab": {
+                "proxy_group": {
+                    "proxy_mode_off": "No Proxy",
+                    "proxy_mode_auto": "Auto Proxy",
+                    "proxy_mode_system": "System Proxy",
+                    "proxy_mode_manual": "Manual Proxy"
+                }
+            },
+            "about_tab": {
+                "check_update": {
+                    "check_update": "Check for updates",
+                    "is_latest": "You are using the latest version.",
+                    "check_failed": "Failed to check for updates: {error_message}",
+                    "found_update": "Found new version: {new_version}"
+                }
+            }
+        }
     }
 }
 

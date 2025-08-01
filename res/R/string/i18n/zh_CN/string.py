@@ -41,6 +41,26 @@ string_dict = {
                 "program_info": "展示程序信息并退出"
             }
         }
+    },
+    "gui": {
+        "configure_dialog": {
+            "misc_settings_tab": {
+                "proxy_group": {
+                    "proxy_mode_off": "无代理",
+                    "proxy_mode_auto": "自动代理",
+                    "proxy_mode_system": "系统代理",
+                    "proxy_mode_manual": "手动代理"
+                }
+            },
+            "about_tab": {
+                "check_update": {
+                    "check_update": "检查更新",
+                    "is_latest": "当前已是最新版本",
+                    "check_failed": "检查更新失败: {error_message}",
+                    "found_update": "发现新版本: {new_version}"
+                }
+            }
+        }
     }
 }
 # Languages

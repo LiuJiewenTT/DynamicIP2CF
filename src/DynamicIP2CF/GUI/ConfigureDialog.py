@@ -99,10 +99,10 @@ class MiscSettingsTab(QWidget):
         self.proxyModeRadioGroupBoxLayout.setSpacing(15)
         self.proxyModeRadioGroupBox.setLayout(self.proxyModeRadioGroupBoxLayout)
 
-        self.proxyModeNoProxyRadioButton = QRadioButton("No Proxy", parent=self.proxyModeRadioGroupBox)
-        self.proxyModeAutoRadioButton = QRadioButton("Auto Proxy", parent=self.proxyModeRadioGroupBox)
-        self.proxyModeSystemRadioButton = QRadioButton("System Proxy", parent=self.proxyModeRadioGroupBox)
-        self.proxyModeManualRadioButton = QRadioButton("Manual Proxy", parent=self.proxyModeRadioGroupBox)
+        self.proxyModeNoProxyRadioButton = QRadioButton(R.string.gui.configure_dialog.misc_settings_tab.proxy_group.proxy_mode_off, parent=self.proxyModeRadioGroupBox)
+        self.proxyModeAutoRadioButton = QRadioButton(R.string.gui.configure_dialog.misc_settings_tab.proxy_group.proxy_mode_auto, parent=self.proxyModeRadioGroupBox)
+        self.proxyModeSystemRadioButton = QRadioButton(R.string.gui.configure_dialog.misc_settings_tab.proxy_group.proxy_mode_system, parent=self.proxyModeRadioGroupBox)
+        self.proxyModeManualRadioButton = QRadioButton(R.string.gui.configure_dialog.misc_settings_tab.proxy_group.proxy_mode_manual, parent=self.proxyModeRadioGroupBox)
 
         # 创建一个按钮组来管理这些单选按钮
         self.proxyModeButtonGroup = QButtonGroup(self.proxyModeRadioGroupBox)
@@ -202,7 +202,7 @@ class AboutTab(QWidget):
         self.rightDetailsLayout.addWidget(self.textLabel)
 
         self.checkUpdatelayout = QHBoxLayout(self)
-        self.checkUpdateButton = QPushButton("检查更新", self)
+        self.checkUpdateButton = QPushButton(R.string.gui.configure_dialog.about_tab.check_update.check_update, self)
         self.checkUpdateButton.clicked.connect(self.check_update)
         self.checkUpdatelayout.addWidget(self.checkUpdateButton)
         self.rightDetailsLayout.addLayout(self.checkUpdatelayout)
@@ -220,12 +220,12 @@ class AboutTab(QWidget):
         status, version_message, status_code, response_text = gui_utils.check_update_available()
         message: str
         if status:
-            message = "发现新版本: {new_version}".format(new_version=version_message)
+            message = R.string.gui.configure_dialog.about_tab.check_update.found_update.format(new_version=version_message)
         else:
             if version_message == "":
-                message = "检查更新失败: {error_message}".format(error_message=f"[{status_code}]: {response_text}")
+                message = R.string.gui.configure_dialog.about_tab.check_update.check_failed.format(error_message=f"[{status_code}]: {response_text}")
             else:
-                message = "当前已是最新版本"
+                message = R.string.gui.configure_dialog.about_tab.check_update.is_latest
         self.checkUpdateResultLabel.setText(message)
         gui_utils.adjust_widget_size_recursively(self.checkUpdateResultLabel)
 
