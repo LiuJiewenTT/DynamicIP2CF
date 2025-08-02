@@ -44,15 +44,40 @@ string_dict = {
     },
     "gui": {
         "configure_dialog": {
+            "window_title": "Configuration",
+            "record_info_settings_tab": {
+                "tab_title": "Record Info",
+                "record_info_group": {
+                    "labels": {
+                        "api_token": "API Token: ",
+                        "zone_id": "Zone ID: ",
+                        "record_id": "Record ID: ",
+                        "domain_name": "Domain Name: "
+                    },
+                    "edits_help_texts": {
+                        "api_token": "Please enter API Token",
+                        "zone_id": "Please enter Zone ID",
+                        "record_id": "Please enter Record ID",
+                        "domain_name": "Please enter Domain Name"
+                    }
+                }
+            },
             "misc_settings_tab": {
+                "tab_title": "Misc",
                 "proxy_group": {
+                    "proxy_settings": "Network Proxy Settings",
+                    "proxy_mode": "Proxy Mode",
                     "proxy_mode_off": "No Proxy",
                     "proxy_mode_auto": "Auto Proxy",
                     "proxy_mode_system": "System Proxy",
-                    "proxy_mode_manual": "Manual Proxy"
+                    "proxy_mode_manual": "Manual Proxy",
+                    "manual_proxy_settings": "Manual Proxy Settings",
+                    "proxy_url": "Proxy URL: ",
+                    "proxy_override": "Proxy Override: "
                 }
             },
             "about_tab": {
+                "tab_title": "About",
                 "check_update": {
                     "check_update": "Check for updates",
                     "is_latest": "You are using the latest version.",

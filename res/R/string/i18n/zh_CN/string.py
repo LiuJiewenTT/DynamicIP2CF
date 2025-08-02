@@ -44,15 +44,40 @@ string_dict = {
     },
     "gui": {
         "configure_dialog": {
+            "window_title": "配置界面",
+            "record_info_settings_tab": {
+                "tab_title": "记录信息设置",
+                "record_info_group": {
+                    "labels": {
+                        "api_token": "API 口令: ",
+                        "zone_id": "区域 ID: ",
+                        "record_id": "记录 ID: ",
+                        "domain_name": "域名: "
+                    },
+                    "edits_help_texts": {
+                        "api_token": "请输入API Token",
+                        "zone_id": "请输入区域 ID",
+                        "record_id": "请输入记录 ID",
+                        "domain_name": "请输入域名"
+                    }
+                }
+            },
             "misc_settings_tab": {
+                "tab_title": "其他设置",
                 "proxy_group": {
+                    "proxy_settings": "网络代理设置",
+                    "proxy_mode": "代理模式",
                     "proxy_mode_off": "无代理",
                     "proxy_mode_auto": "自动代理",
                     "proxy_mode_system": "系统代理",
-                    "proxy_mode_manual": "手动代理"
+                    "proxy_mode_manual": "手动代理",
+                    "manual_proxy_settings": "手动代理设置",
+                    "proxy_url": "代理URL: ",
+                    "proxy_override": "排除代理: "
                 }
             },
             "about_tab": {
+                "tab_title": "关于",
                 "check_update": {
                     "check_update": "检查更新",
                     "is_latest": "当前已是最新版本",

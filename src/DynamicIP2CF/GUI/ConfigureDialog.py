@@ -35,30 +35,30 @@ class RecordInfoSettingsTab(QWidget):
     def __init_layout(self):
 
         self.gridLayout = QGridLayout(self)
-        self.gridLayout.addWidget(QLabel("API Token: "), 0, 0)
-        self.gridLayout.addWidget(QLabel("Zone ID: "), 1, 0)
-        self.gridLayout.addWidget(QLabel("Record ID: "), 2, 0)
-        self.gridLayout.addWidget(QLabel("Domain Name: "), 3, 0)
+        self.gridLayout.addWidget(QLabel(R.string.gui.configure_dialog.record_info_settings_tab.record_info_group.labels.api_token), 0, 0)
+        self.gridLayout.addWidget(QLabel(R.string.gui.configure_dialog.record_info_settings_tab.record_info_group.labels.zone_id), 1, 0)
+        self.gridLayout.addWidget(QLabel(R.string.gui.configure_dialog.record_info_settings_tab.record_info_group.labels.record_id), 2, 0)
+        self.gridLayout.addWidget(QLabel(R.string.gui.configure_dialog.record_info_settings_tab.record_info_group.labels.domain_name), 3, 0)
 
         _, _, api_token, zone_id, record_id, domain_name = common.iniConfigManager.get_record_info().values()
 
         self.apiTokenEdit = QLineEdit()
-        self.apiTokenEdit.setPlaceholderText("请输入API Token")
+        self.apiTokenEdit.setPlaceholderText(R.string.gui.configure_dialog.record_info_settings_tab.record_info_group.edits_help_texts.api_token)
         self.apiTokenEdit.setText(api_token)
         self.gridLayout.addWidget(self.apiTokenEdit, 0, 1)
 
         self.zoneIdEdit = QLineEdit()
-        self.zoneIdEdit.setPlaceholderText("请输入Zone ID")
+        self.zoneIdEdit.setPlaceholderText(R.string.gui.configure_dialog.record_info_settings_tab.record_info_group.edits_help_texts.zone_id)
         self.zoneIdEdit.setText(zone_id)
         self.gridLayout.addWidget(self.zoneIdEdit, 1, 1)
 
         self.recordIdEdit = QLineEdit()
-        self.recordIdEdit.setPlaceholderText("请输入Record ID")
+        self.recordIdEdit.setPlaceholderText(R.string.gui.configure_dialog.record_info_settings_tab.record_info_group.edits_help_texts.record_id)
         self.recordIdEdit.setText(record_id)
         self.gridLayout.addWidget(self.recordIdEdit, 2, 1)
 
         self.domainNameEdit = QLineEdit()
-        self.domainNameEdit.setPlaceholderText("请输入Domain Name")
+        self.domainNameEdit.setPlaceholderText(R.string.gui.configure_dialog.record_info_settings_tab.record_info_group.edits_help_texts.domain_name)
         self.domainNameEdit.setText(domain_name)
         self.gridLayout.addWidget(self.domainNameEdit, 3, 1)
 
@@ -85,14 +85,14 @@ class MiscSettingsTab(QWidget):
         self.layout = QVBoxLayout(self)
         self.layout.setSpacing(15)
 
-        self.proxyGroup = QGroupBox(parent=self, title="Proxy Settings")
+        self.proxyGroup = QGroupBox(parent=self, title=R.string.gui.configure_dialog.misc_settings_tab.proxy_group.proxy_settings)
         self.layout.addWidget(self.proxyGroup)
 
         self.proxyGroupLayout = QHBoxLayout(self.proxyGroup)
         self.proxyGroupLayout.setSpacing(15)
         self.proxyGroup.setLayout(self.proxyGroupLayout)
 
-        self.proxyModeRadioGroupBox = QGroupBox(parent=self.proxyGroup, title="Proxy Mode")
+        self.proxyModeRadioGroupBox = QGroupBox(parent=self.proxyGroup, title=R.string.gui.configure_dialog.misc_settings_tab.proxy_group.proxy_mode)
         self.proxyGroupLayout.addWidget(self.proxyModeRadioGroupBox)
 
         self.proxyModeRadioGroupBoxLayout = QVBoxLayout(self.proxyModeRadioGroupBox)
@@ -117,16 +117,16 @@ class MiscSettingsTab(QWidget):
         self.proxyModeRadioGroupBoxLayout.addWidget(self.proxyModeSystemRadioButton)
         self.proxyModeRadioGroupBoxLayout.addWidget(self.proxyModeManualRadioButton)
 
-        self.proxyManualParamsGroup = QGroupBox(parent=self.proxyGroup, title="Manual Proxy Settings")
+        self.proxyManualParamsGroup = QGroupBox(parent=self.proxyGroup, title=R.string.gui.configure_dialog.misc_settings_tab.proxy_group.manual_proxy_settings)
         self.proxyGroupLayout.addWidget(self.proxyManualParamsGroup)
 
         self.proxyManualParamsGroupLayout = QVBoxLayout(self.proxyManualParamsGroup)
         self.proxyManualParamsGroup.setLayout(self.proxyManualParamsGroupLayout)
 
-        self.proxyManualParams_proxyUrlLabel = QLabel("Proxy URL: ", parent=self.proxyManualParamsGroup)
+        self.proxyManualParams_proxyUrlLabel = QLabel(R.string.gui.configure_dialog.misc_settings_tab.proxy_group.proxy_url, parent=self.proxyManualParamsGroup)
         self.proxyManualParams_proxyUrlEdit = QLineEdit(parent=self.proxyManualParamsGroup)
 
-        self.proxyManualParams_proxyOverrideLabel = QLabel("Proxy Override: ", parent=self.proxyManualParamsGroup)
+        self.proxyManualParams_proxyOverrideLabel = QLabel(R.string.gui.configure_dialog.misc_settings_tab.proxy_group.proxy_override, parent=self.proxyManualParamsGroup)
         self.proxyManualParams_proxyOverrideTextBrowser = QTextBrowser(parent=self.proxyManualParamsGroup)
         self.proxyManualParams_proxyOverrideTextBrowser.setMaximumHeight(100)
 
@@ -242,9 +242,9 @@ class ConfigureDialog(QDialog):
         load_resource_manager()
         self.widget_pixmap_resize_pairs = []
 
-        self.tabsTitle["RecordInfoSettingsTab"] = "记录信息设置"
-        self.tabsTitle["MiscSettingsTab"] = "其他设置"
-        self.tabsTitle["AboutTab"] = "关于"
+        self.tabsTitle["RecordInfoSettingsTab"] = R.string.gui.configure_dialog.record_info_settings_tab.tab_title
+        self.tabsTitle["MiscSettingsTab"] = R.string.gui.configure_dialog.misc_settings_tab.tab_title
+        self.tabsTitle["AboutTab"] = R.string.gui.configure_dialog.about_tab.tab_title
 
         self.__init_layout()
 
@@ -257,7 +257,7 @@ class ConfigureDialog(QDialog):
         gui_utils.resize_widgets_pixmap([new_size,]*pair_count, self.widget_pixmap_resize_pairs)
 
     def __init_layout(self):
-        self.setWindowTitle("配置界面")
+        self.setWindowTitle(R.string.gui.configure_dialog.window_title)
         # self.resize(400, 300)
 
         style_string = ""
