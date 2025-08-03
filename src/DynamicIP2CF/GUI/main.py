@@ -1,5 +1,6 @@
 import ipaddress
 import sys
+import ctypes
 from typing import List, Tuple, Union
 
 from PySide6.QtWidgets import QApplication, QMainWindow, QFrame, QWidget, QListWidget, QListWidgetItem, QHBoxLayout, QVBoxLayout, QLabel, QPushButton, QSizePolicy, QGroupBox
@@ -11,6 +12,15 @@ import R
 from DynamicIP2CF import common
 from DynamicIP2CF.utils_toplevel import cf_update_ip
 from DynamicIP2CF.GUI import ConfigureDialog, utils as gui_utils
+
+
+def in_terminal():
+    return sys.stdin.isatty() and sys.stdout.isatty()
+
+
+def hide_console():
+    hwnd = ctypes.windll.kernel32.GetConsoleWindow()
+    ctypes.windll.user32.ShowWindow(hwnd, 0)
 
 
 def load_resource_manager():
@@ -249,6 +259,12 @@ class MainWindow(QMainWindow):
 
 
 def main():
+    if not in_terminal():
+        hide_console()
+    else:
+        # print("Running in terminal.")
+        pass
+
     common.iniConfigManager = common.IniConfigManager(common.config_ini_path)
     try:
         common.iniConfigManager.read_config_file()
