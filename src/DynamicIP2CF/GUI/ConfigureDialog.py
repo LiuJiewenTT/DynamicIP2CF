@@ -93,9 +93,16 @@ class MiscSettingsTab(QWidget):
         self.languageGroup.setLayout(self.languageGroupLayout)
 
         self.languageComboBox = gui_utils.create_language_combo_box(self.languageGroup)
+        self.initial_lang = gui_utils.get_language_name_from_locale(common.iniConfigManager.config.get("Language", "lang", fallback=""))
+        if not self.initial_lang:
+            self.languageComboBox.setCurrentIndex(0)
+        else:
+            self.languageComboBox.setCurrentText(self.initial_lang)
+        self.languageComboBox.initial_index = self.languageComboBox.currentIndex()
+        self.languageComboBox.currentIndexChanged.connect(lambda : self.languageHintRestartLabel.setText(R.string.gui.configure_dialog.misc_settings_tab.language_group.hint_restart_to_apply) if self.languageComboBox.currentIndex() != self.languageComboBox.initial_index else self.languageHintRestartLabel.setText(""))
         self.languageGroupLayout.addWidget(self.languageComboBox)
 
-        self.languageHintRestartLabel = QLabel(R.string.gui.configure_dialog.misc_settings_tab.language_group.hint_restart_to_apply, parent=self.languageGroup)
+        self.languageHintRestartLabel = QLabel("", parent=self.languageGroup)
         self.languageGroupLayout.addWidget(self.languageHintRestartLabel)
 
         self.proxyGroup = QGroupBox(parent=self, title=R.string.gui.configure_dialog.misc_settings_tab.proxy_group.proxy_settings)
