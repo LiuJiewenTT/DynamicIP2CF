@@ -1,11 +1,14 @@
-from typing import List, Tuple
+from typing import List, Tuple, Dict, Union, Callable
+from urllib.parse import urlparse
 
 import requests
 from PySide6.QtCore import QSize
 from PySide6.QtGui import Qt, QPixmap, QPalette, QBrush
-from PySide6.QtWidgets import QWidget
+from PySide6.QtWidgets import QWidget, QComboBox
 
+import R
 from DynamicIP2CF import programinfo
+from NetToolKit.local_info import host_matches_override
 
 
 def resize_widget_pixmap(size: QSize, pair: Tuple[QWidget, QPixmap]):
@@ -49,7 +52,7 @@ def compare_version(version1: str, version2: str) -> int:
     return 0
 
 
-def fetch_newest_version_info() -> Tuple[str, int, str]:
+def fetch_newest_version_info(proxies: Union[Dict[str, str], None]=None, proxy_override: Union[List[str], None]=None) -> Tuple[str, int, str]:
     """
     获取最新版本信息
     :return: 最新版本信息，状态码，响应详细信息
@@ -57,7 +60,17 @@ def fetch_newest_version_info() -> Tuple[str, int, str]:
     # 使用Github API获取最新版本的tag信息
 
     fetch_url = programinfo.product_check_update_url
-    response = requests.get(fetch_url)
+    parsed = urlparse(fetch_url)
+    host = parsed.hostname.lower()
+
+    session = requests.Session()
+
+    if proxies and not host_matches_override(host, proxy_override):
+        used_proxies = proxies
+    else:
+        used_proxies = None  # 禁止用代理
+        session.trust_env = False
+    response = session.get(fetch_url, proxies=used_proxies)
     if response.status_code == 200:
         data = response.json()
         tag_name = data['tag_name']
@@ -66,15 +79,41 @@ def fetch_newest_version_info() -> Tuple[str, int, str]:
         return '', response.status_code, response.text
 
 
-def check_update_available() -> Tuple[bool, str, int, str]:
+def check_update_available(proxies=None, proxy_override=None) -> Tuple[bool, str, int, str]:
     """
     检查是否有新版本可用
     :return: 是否有新版本可用，最新版本号，状态码，响应详细信息
     """
     current_version = programinfo.program_version_str
-    newest_version, status_code, response_text = fetch_newest_version_info()
+    newest_version, status_code, response_text = fetch_newest_version_info(proxies=proxies, proxy_override=proxy_override)
     if newest_version == '' or status_code != 200:
         return False, '', status_code, response_text
     else:
         return compare_version(newest_version, current_version) > 0, newest_version, status_code, response_text
 
+
+language_names_from_locales: Dict[str, str] = {
+    'zh_CN': '简体中文',
+    'en_US': 'English (US)'
+}
+
+
+def get_language_name_from_locale(locale: str) -> str:
+    return language_names_from_locales.get(locale, locale)
+
+
+def get_locale_from_language_name(language_name: str) -> str:
+    for locale, name in language_names_from_locales.items():
+        if name == language_name:
+            return locale
+    return ""
+
+
+def create_language_combo_box(parent):
+    func_1: Callable[[str], str] = lambda x: get_language_name_from_locale(x)
+
+    language_combo_box = QComboBox(parent)
+    language_combo_box.addItem(R.string.gui.configure_dialog.misc_settings_tab.language_group.language_use_default)
+    language_combo_box.addItem(func_1('zh_CN'))
+    language_combo_box.addItem(func_1('en_US'))
+    return language_combo_box

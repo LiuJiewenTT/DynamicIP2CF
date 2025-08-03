@@ -85,6 +85,19 @@ class MiscSettingsTab(QWidget):
         self.layout = QVBoxLayout(self)
         self.layout.setSpacing(15)
 
+        self.languageGroup = QGroupBox(parent=self, title=R.string.gui.configure_dialog.misc_settings_tab.language_group.language_settings)
+        self.layout.addWidget(self.languageGroup)
+
+        self.languageGroupLayout = QHBoxLayout(self.languageGroup)
+        self.languageGroupLayout.setSpacing(15)
+        self.languageGroup.setLayout(self.languageGroupLayout)
+
+        self.languageComboBox = gui_utils.create_language_combo_box(self.languageGroup)
+        self.languageGroupLayout.addWidget(self.languageComboBox)
+
+        self.languageHintRestartLabel = QLabel(R.string.gui.configure_dialog.misc_settings_tab.language_group.hint_restart_to_apply, parent=self.languageGroup)
+        self.languageGroupLayout.addWidget(self.languageHintRestartLabel)
+
         self.proxyGroup = QGroupBox(parent=self, title=R.string.gui.configure_dialog.misc_settings_tab.proxy_group.proxy_settings)
         self.layout.addWidget(self.proxyGroup)
 
@@ -162,6 +175,10 @@ class MiscSettingsTab(QWidget):
             self.proxyManualParamsGroup.setDisabled(True)
 
     def apply_config_ini(self):
+        language_selected = self.languageComboBox.currentText()
+        language_locale = gui_utils.get_locale_from_language_name(language_selected)
+        common.iniConfigManager.config.set("Language", "lang", language_locale)
+
         proxy_mode = ""
         proxy_mode_id = self.proxyModeButtonGroup.checkedId()
         proxy_url = self.proxyManualParams_proxyUrlEdit.text()

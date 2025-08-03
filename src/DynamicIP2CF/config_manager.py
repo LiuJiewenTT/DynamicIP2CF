@@ -29,6 +29,12 @@ class IniConfigManager(ConfigManager):
             self.config = configparser.ConfigParser()
         else:
             self.config = config
+        self.generate_all_sections()
+
+    def generate_all_sections(self):
+        self.config.add_section("Cloudflare")
+        self.config.add_section("Proxy")
+        self.config.add_section("Language")
 
     def read_config_file(self):
         super().read_config_file()

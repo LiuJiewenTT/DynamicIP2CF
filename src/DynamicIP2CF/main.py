@@ -79,6 +79,7 @@ if __name__ == "__main__":
     parser.add_argument("--proxy-mode", type=str, action="store", default="auto", help=R.string.cli.parser.options_help.proxy_mode)
     parser.add_argument("--proxy-url", type=str, action="store", help=R.string.cli.parser.options_help.proxy_url)
     parser.add_argument("--override-list", type=str, action="store", help=R.string.cli.parser.options_help.override_list)
+    parser.add_argument("--language", type=str, action="store", help=R.string.cli.parser.options_help.language)
     parser.add_argument("--version", action="version", version=programinfo.program_version_str)
     parser.add_argument("--program-info", action=MultiLineVersionAction, version_text=programinfo.programinfo_str1, help=R.string.cli.parser.options_help.program_info)
     args = parser.parse_args()
@@ -91,11 +92,15 @@ if __name__ == "__main__":
 
     record_info: Dict[str, str] = {}
     record_info_list = []
+    proxy_info = {}
 
     if flag_generate_config_ini:
         common.iniConfigManager = common.IniConfigManager(common.config_ini_path)
         common.iniConfigManager.generate_config_file()
         exit(0)
+
+    if args.language:
+        R.string.use_lang(args.language)
 
     config_ini_path: str = read_config_ini_str
 
@@ -109,16 +114,23 @@ if __name__ == "__main__":
     if config_ini_path:
         common.iniConfigManager = common.IniConfigManager(config_ini_path)
         common.iniConfigManager.read_config_file()
+        lang = common.iniConfigManager.config.get("Language", "lang", fallback="")
+        if lang:
+            R.string.use_lang(lang)
         record_info = common.iniConfigManager.get_record_info()
+        proxy_info = common.iniConfigManager.get_proxy_info()
 
     if flag_cli_mode:
         retv: Union[bool, SupportsInt] = 0
+        used_proxies = None
 
         # 准备解析代理
-        proxy_mode = args.proxy_mode
-        proxy_url = args.proxy_url
-        used_proxies = None
-        override_list = args.override_list
+        if args.proxy_mode:
+            proxy_mode = args.proxy_mode
+            proxy_url = args.proxy_url
+            override_list = args.override_list
+        else:
+            proxy_mode, proxy_url, override_list = proxy_info.values()
 
         if proxy_mode == "auto":
             proxy_mode = "system"

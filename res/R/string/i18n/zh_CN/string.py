@@ -37,7 +37,8 @@ string_dict = {
                 "generate_config_ini": "生成 config.ini 配置文件",
                 "proxy_mode": "网络代理模式, 可选值: auto, system, manual, off",
                 "proxy_url": "网络代理URL, 应当是类似于: http://127.0.0.1:8888 的链接",
-                "override_list": "网络代理覆写列表，用于跳过网络代理, 应当是类似于: 192.168.1.1;192.168.1.2 。此功能可能不是很完善。",
+                "override_list": "网络代理覆写列表，用于跳过网络代理，例如：192.168.1.1;192.168.1.2 。此功能可能不是很完善。",
+                "language": "指定使用的语言，例如：zh_CN、en_US",
                 "program_info": "展示程序信息并退出"
             }
         }
@@ -88,6 +89,11 @@ string_dict = {
             },
             "misc_settings_tab": {
                 "tab_title": "其他设置",
+                "language_group": {
+                    "language_settings": "语言设置: ",
+                    "language_use_default": "（默认）",
+                    "hint_restart_to_apply": "（重启程序以完全生效）"
+                },
                 "proxy_group": {
                     "proxy_settings": "网络代理设置",
                     "proxy_mode": "代理模式",

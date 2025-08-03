@@ -36,8 +36,9 @@ string_dict = {
                 "domain_name": "DNS record's domain name to update",
                 "generate_config_ini": "Generate config.ini file",
                 "proxy_mode": "Proxy mode, should be auto, system, manual, or off",
-                "proxy_url": "Proxy URL, should be like http://127.0.0.1:8888",
-                "override_list": "Override list, should be like 192.168.1.1;192.168.1.2. May not work very well.",
+                "proxy_url": "Proxy URL, e.g. http://127.0.0.1:8888",
+                "override_list": "Override list, e.g. 192.168.1.1;192.168.1.2. May not work very well.",
+                "language": "Indicate the language to use, e.g. zh_CN or en_US.",
                 "program_info": "Show program information and exit"
             }
         }
@@ -88,6 +89,11 @@ string_dict = {
             },
             "misc_settings_tab": {
                 "tab_title": "Misc",
+                "language_group": {
+                    "language_settings": "Language Settings: ",
+                    "language_use_default": "(Default)",
+                    "hint_restart_to_apply": "Restart program to fully apply."
+                },
                 "proxy_group": {
                     "proxy_settings": "Network Proxy Settings",
                     "proxy_mode": "Proxy Mode",
