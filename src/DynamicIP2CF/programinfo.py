@@ -8,7 +8,9 @@ author_info: dict
 project_name = 'DynamicIP2CF'
 project_link = 'https://github.com/LiuJiewenTT/DynamicIP2CF'
 product_check_update_url = 'https://api.github.com/repos/LiuJiewenTT/DynamicIP2CF/releases/latest'
-product_name = 'CloudFlare Dynamic IP Updater'
+product_name = 'DynamicIP2CF'
+product_description_short = 'CloudFlare Dynamic IP Updater'
+product_description = 'A simple tool to update CloudFlare DNS records with your current public IP address.'
 program_name = 'DynamicIP2CF'
 product_version = (0, 0, 1, 0)
 program_version = (0, 0, 1, 0)
@@ -18,7 +20,7 @@ program_iconpicture_paths = [
 ]
 program_iconpicture_idx: int # = 0
 program_iconpicture_path: str
-frontend_name = 'CloudFlare Dynamic IP Updater'
+frontend_name = 'DynamicIP2CF GUI'
 license_type = ''
 buildin_exinfo: object
 programinfo_str1: str

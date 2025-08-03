@@ -43,6 +43,30 @@ string_dict = {
         }
     },
     "gui": {
+        "main_window": {
+            "info_group": {
+                "status_label": {
+                    "title": "状态：",
+                    "ready": "就绪",
+                    "getting_ip": "获取IP中...",
+                    "updating_ip_to_dns": "更新IP到DNS中...",
+                },
+                "result_label": {
+                    "title": "结果信息：",
+                    "success": "成功",
+                    "failed": "失败",
+                    "null": "空",
+                    "no_ip_selected": "没有选择IP",
+                    "invalid_ip": "IP错误：{error}",
+                    "updating_ip_to_dns_success": "更新IP到DNS成功",
+                    "updating_ip_to_dns_failed_1": "更新IP到DNS失败：{error}",
+                    "updating_ip_to_dns_failed_2": "更新IP到DNS失败。\n状态码：{status_code}，详细：{result_text}",
+                },
+            },
+            "configure_button": "配置",
+            "refresh_ip_list_button": "刷新本机外部IP列表",
+            "update_ip_button": "更新IP到DNS",
+        },
         "configure_dialog": {
             "window_title": "配置界面",
             "record_info_settings_tab": {

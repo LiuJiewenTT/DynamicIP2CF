@@ -43,6 +43,30 @@ string_dict = {
         }
     },
     "gui": {
+        "main_window": {
+            "info_group": {
+                "status_label": {
+                    "title": "Status: ",
+                    "ready": "Ready",
+                    "getting_ip": "Getting IP address...",
+                    "updating_ip_to_dns": "Updating IP address to DNS...",
+                },
+                "result_label": {
+                    "title": "Result: ",
+                    "success": "Success",
+                    "failed": "Failed",
+                    "null": "",
+                    "no_ip_selected": "No IP selected",
+                    "invalid_ip": "IP invalid：{error}",
+                    "updating_ip_to_dns_success": "Updating IP to DNS success",
+                    "updating_ip_to_dns_failed_1": "Updating IP to DNS failed: {error}",
+                    "updating_ip_to_dns_failed_2": "Updating IP to DNS failed.\nStatus code: {status_code}, Details: {result_text}",
+                },
+            },
+            "configure_button": "Configure",
+            "refresh_ip_list_button": "Refresh external IP List",
+            "update_ip_button": "Update IP to DNS",
+        },
         "configure_dialog": {
             "window_title": "Configuration",
             "record_info_settings_tab": {

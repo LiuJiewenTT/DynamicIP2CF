@@ -118,9 +118,9 @@ class MainWindow(QMainWindow):
         self.status_layout = QHBoxLayout(self.status_widget)
         self.status_widget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Minimum)
         self.info_frame_layout.addWidget(self.status_widget, alignment=Qt.AlignLeft | Qt.AlignBottom)
-        self.status_label_title = QLabel("状态：", alignment=Qt.AlignLeft | Qt.AlignBottom)
+        self.status_label_title = QLabel(text=R.string.gui.main_window.info_group.status_label.title, alignment=Qt.AlignLeft | Qt.AlignBottom)
         self.status_layout.addWidget(self.status_label_title)
-        self.status_label = QLabel("就绪", alignment=Qt.AlignLeft | Qt.AlignBottom)
+        self.status_label = QLabel(text=R.string.gui.main_window.info_group.status_label.ready, alignment=Qt.AlignLeft | Qt.AlignBottom)
         self.status_layout.addWidget(self.status_label)
 
         # Result label
@@ -128,25 +128,25 @@ class MainWindow(QMainWindow):
         self.result_layout = QHBoxLayout(self.result_widget)
         self.result_widget.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Minimum)
         self.info_frame_layout.addWidget(self.result_widget, alignment=Qt.AlignLeft | Qt.AlignBottom)
-        self.result_label_title = QLabel("结果信息：", alignment=Qt.AlignLeft | Qt.AlignBottom)
+        self.result_label_title = QLabel(text=R.string.gui.main_window.info_group.result_label.title, alignment=Qt.AlignLeft | Qt.AlignBottom)
         self.result_layout.addWidget(self.result_label_title)
-        self.result_label = QLabel("空", alignment=Qt.AlignLeft | Qt.AlignBottom)
+        self.result_label = QLabel(text=R.string.gui.main_window.info_group.result_label.null, alignment=Qt.AlignLeft | Qt.AlignBottom)
         # set result_label to be selectable
         self.result_label.setTextInteractionFlags(Qt.TextSelectableByMouse)
         self.result_layout.addWidget(self.result_label)
 
         # Configure button
-        self.configure_button = QPushButton("配置")
+        self.configure_button = QPushButton(R.string.gui.main_window.configure_button)
         self.configure_button.clicked.connect(self.show_configure_dialog)
         self.right_side_layout.addWidget(self.configure_button)
 
         # Refresh IP list button
-        self.refresh_ip_list_button = QPushButton("刷新本机外部IP")
+        self.refresh_ip_list_button = QPushButton(R.string.gui.main_window.refresh_ip_list_button)
         self.refresh_ip_list_button.clicked.connect(self.refresh_ip_list)
         self.right_side_layout.addWidget(self.refresh_ip_list_button)
 
         # Update IP button
-        self.update_ip_button = QPushButton("更新IP到DNS")
+        self.update_ip_button = QPushButton(R.string.gui.main_window.update_ip_button)
         self.update_ip_button.clicked.connect(self.update_ip)
         self.right_side_layout.addWidget(self.update_ip_button)
 
@@ -198,13 +198,13 @@ class MainWindow(QMainWindow):
         self.list_widget.addItem(item_document_ip)
 
     def update_ip(self):
-        self.update_result("空")
-        self.update_status("获取IP中...")
+        self.update_result(R.string.gui.main_window.info_group.result_label.null)
+        self.update_status(R.string.gui.main_window.info_group.status_label.getting_ip)
         ip_str = self.get_selected_ip()
         if ip_str is None:
             # 没有可用IP
-            self.update_result("没有选择IP")
-            self.update_status("就绪")
+            self.update_result(R.string.gui.main_window.info_group.result_label.no_ip_selected)
+            self.update_status(R.string.gui.main_window.info_group.status_label.ready)
             return
 
         record_info = common.iniConfigManager.get_record_info()
@@ -212,8 +212,8 @@ class MainWindow(QMainWindow):
         try:
             ip = ipaddress.ip_address(record_info['ip'])
         except ValueError as e:
-            self.update_result("IP错误：{error}".format(error=str(e)))
-            self.update_status("就绪")
+            self.update_result(R.string.gui.main_window.info_group.result_label.invalid_ip.format(error=str(e)))
+            self.update_status(R.string.gui.main_window.info_group.status_label.ready)
             return
 
         if ip.version == 6:
@@ -221,7 +221,7 @@ class MainWindow(QMainWindow):
         else:
             record_info['ip_version'] = 'v4'
 
-        self.update_status("更新IP到DNS中...")
+        self.update_status(R.string.gui.main_window.info_group.status_label.updating_ip_to_dns)
         retv = None
         update_error = None
         status_code = None
@@ -238,13 +238,13 @@ class MainWindow(QMainWindow):
             print(e)
             update_error = e
         if retv:
-            self.update_result("更新IP到DNS成功")
+            self.update_result(R.string.gui.main_window.info_group.result_label.success)
         else:
             if update_error is not None:
-                self.update_result("更新IP到DNS失败：{error}".format(error=str(update_error)))
+                self.update_result(R.string.gui.main_window.info_group.result_label.updating_ip_to_dns_failed_1.format(error=str(update_error)))
             else:
-                self.update_result("更新IP到DNS失败。\n状态码：{status_code}，详细：{result_text}".format(status_code=status_code, result_text=result_text))
-        self.update_status("就绪")
+                self.update_result(R.string.gui.main_window.info_group.result_label.updating_ip_to_dns_failed_2.format(status_code=status_code, result_text=result_text))
+        self.update_status(R.string.gui.main_window.info_group.status_label.ready)
         pass
 
 
