@@ -139,7 +139,7 @@ class MiscSettingsTab(QWidget):
 
     def load_values(self):
         proxy_mode, proxy_url, proxy_override = common.iniConfigManager.get_proxy_info().values()
-        print(f"proxy_mode: {proxy_mode}, proxy_url: {proxy_url}, proxy_override: {proxy_override}")
+        # print(f"proxy_mode: {proxy_mode}, proxy_url: {proxy_url}, proxy_override: {proxy_override}")
 
         if proxy_mode == "off":
             self.proxyModeButtonGroup.button(0).setChecked(True)
@@ -160,6 +160,21 @@ class MiscSettingsTab(QWidget):
             self.proxyManualParamsGroup.setDisabled(False)
         else:
             self.proxyManualParamsGroup.setDisabled(True)
+
+    def apply_config_ini(self):
+        proxy_mode = ""
+        proxy_mode_id = self.proxyModeButtonGroup.checkedId()
+        proxy_url = self.proxyManualParams_proxyUrlEdit.text()
+        proxy_override = self.proxyManualParams_proxyOverrideTextBrowser.toPlainText()
+        if proxy_mode_id == 0:
+            proxy_mode = "off"
+        elif proxy_mode_id == 1:
+            proxy_mode = "auto"
+        elif proxy_mode_id == 2:
+            proxy_mode = "system"
+        elif proxy_mode_id == 3:
+            proxy_mode = "manual"
+        common.iniConfigManager.update_proxy_info(proxy_mode, proxy_url, proxy_override)
 
 
 class AboutTab(QWidget):
@@ -304,12 +319,16 @@ class ConfigureDialog(QDialog):
     def accept(self):
         record_tab = self.tabs["RecordInfoSettingsTab"]
         record_tab.apply_config_ini()
+        misc_settings_tab = self.tabs["MiscSettingsTab"]
+        misc_settings_tab.apply_config_ini()
         common.iniConfigManager.update_config_file()
         super().accept()
 
     def on_apply(self):
         record_tab = self.tabs["RecordInfoSettingsTab"]
         record_tab.apply_config_ini()
+        misc_settings_tab = self.tabs["MiscSettingsTab"]
+        misc_settings_tab.apply_config_ini()
         super().accept()
 
 

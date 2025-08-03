@@ -232,6 +232,8 @@ class MainWindow(QMainWindow):
             used_proxies = None
             override_list = None
 
+        print(f"used_proxies: {used_proxies}, override_list: {override_list}")
+
         try:
             retv, status_code, result_text = cf_update_ip(*record_info.values(), proxies=used_proxies, override_list=override_list)
         except Exception as e:

@@ -112,3 +112,9 @@ class IniConfigManager(ConfigManager):
     def get_resolved_proxy_info(self):
         return self.resolve_proxy_info(**self.get_proxy_info())
 
+    def update_proxy_info(self, proxy_mode: str, proxy_url: str, proxy_override: str):
+        config = self.config
+        config.set("Proxy", "mode", proxy_mode)
+        config.set("Proxy", "url", proxy_url)
+        config.set("Proxy", "override", proxy_override)
+
