@@ -179,15 +179,6 @@ if __name__ == "__main__":
         import DynamicIP2CF.GUI.main as gui_main
         # gui_main.main()
 
-        if gui_main.in_terminal():
-            # print("GUI in terminal mode")
-            # print(f"stdin.isatty(): {gui_main.in_terminal()}")
-            # print(f"stdout.isatty(): {gui_main.in_terminal()}")
-            pass
-        else:
-            gui_main.hide_console()
-            pass
-
         app = gui_main.QApplication([])
         window = gui_main.MainWindow()
         window.show()
