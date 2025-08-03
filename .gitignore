@@ -7,3 +7,7 @@ config.ini
 /.run/main_bak.run.xml
 res/assets/R.jpg
 res/R/string/__init__.pyi
+/build_venv_pyinstaller
+venv_requirements/venv_requirements.txt
+build/pyinstaller_build/dist/
+build/pyinstaller_build/build/
