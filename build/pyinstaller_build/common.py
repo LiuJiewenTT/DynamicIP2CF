@@ -1,4 +1,7 @@
+import os
 import os.path as osp
+import sys
+import datetime
 
 from DynamicIP2CF import programinfo
 
@@ -16,6 +19,7 @@ res_path = osp.join(project_root_path, 'res')
 dist_path = osp.join(build_root_path, 'dist')         # 打包输出目录
 work_path = osp.join(build_root_path, 'build')        # 打包临时目录
 specs_path = osp.join(build_root_path, 'specs')        # 打包配置文件目录
+my_build_cache_path = osp.join(build_root_path, 'my_build_cache')
 
 print(f'build_root_path: {build_root_path}')
 print(f'project_root_path: {project_root_path}')
@@ -32,4 +36,34 @@ icon_file = f'{res_path}/assets/icons/icon.ico'
 
 spec_startups: dict # 中转构建配置
 
+
+builtin_exinfo: object
+
+
+def generate_builtin_exinfo(edition_str: str):
+    global builtin_exinfo
+
+    build_time = datetime.datetime.now().astimezone()
+    build_timestamp = build_time.timestamp()
+    # build_timestamp_str = str(build_time)
+    build_timestamp_str = build_time.strftime('%Y-%m-%d %H:%M:%S.%f %z(%Z) %j/%V:%u/%a')
+
+    builtin_exinfo_content = ""
+
+    value_map = {
+        'edition_str': edition_str,
+        'build_timestamp': build_timestamp,
+        'build_timestamp_str': build_timestamp_str,
+        'hasSplash': False,
+        'program_iconpicture_idx': 0
+    }
+    with open(osp.join(build_root_path, "builtin_exinfo_template.py"), "r", encoding="utf-8") as f1:
+        builtin_exinfo_template_content = f1.read()
+        builtin_exinfo_content = builtin_exinfo_template_content.format_map(value_map)
+        if not osp.exists(my_build_cache_path):
+            os.makedirs(my_build_cache_path)
+        with open(osp.join(my_build_cache_path, "builtin_exinfo.py"), "w", encoding="utf-8") as f2:
+            f2.write(builtin_exinfo_content)
+    builtin_exinfo = (f"{programinfo.__package__}.builtin_exinfo", osp.join(my_build_cache_path, "builtin_exinfo.py"), 'PYMODULE')
+    return builtin_exinfo
 

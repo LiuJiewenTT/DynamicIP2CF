@@ -22,7 +22,7 @@ program_iconpicture_idx: int # = 0
 program_iconpicture_path: str
 frontend_name = 'DynamicIP2CF GUI'
 license_type = ''
-buildin_exinfo: object
+builtin_exinfo: object
 programinfo_str1: str
 programinfo_html_str1: str
 

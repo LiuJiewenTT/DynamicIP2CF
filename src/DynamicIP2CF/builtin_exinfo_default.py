@@ -1,5 +1,4 @@
 class Builtin_ExInfo:
-    edition_parts = [None, None, None]
     edition_str = 'Not Built'
     build_timestamp = 0
     build_timestamp_str = 'Never'

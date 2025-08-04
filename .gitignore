@@ -11,3 +11,5 @@ res/R/string/__init__.pyi
 venv_requirements/venv_requirements.txt
 build/pyinstaller_build/dist/
 build/pyinstaller_build/build/
+/build/pyinstaller_build/specs/generated_examples/
+/build/pyinstaller_build/my_build_cache

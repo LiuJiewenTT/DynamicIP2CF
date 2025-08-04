@@ -6,8 +6,9 @@ __package__ = 'pyinstaller_build.specs'
 from .. import common
 from ..common import *
 
-# hiddenimports = []
-hiddenimports = ['_pyi_rth_utils', 'pyi_rth_pyside6']
+
+hiddenimports = []
+# hiddenimports = ['_pyi_rth_utils']
 
 
 def assemble(flag_onefile: bool, a: Analysis, pyz: PYZ) -> Union[EXE, COLLECT]:
@@ -16,10 +17,12 @@ def assemble(flag_onefile: bool, a: Analysis, pyz: PYZ) -> Union[EXE, COLLECT]:
         'icon': icon_file,
         'upx': True,
         'upx_exclude': [],
-        'runtime_tmpdir': None,
+        'strip': False
     }
     exe_kwargs = {
-        **common_kwargs
+        **common_kwargs,
+        'debug': False,
+        'bootloader_ignore_signals': False
     }
     collect_kwargs = {
         **common_kwargs
@@ -53,8 +56,20 @@ def assemble(flag_onefile: bool, a: Analysis, pyz: PYZ) -> Union[EXE, COLLECT]:
         return COLLECT(exe, *collect_vargs, **collect_kwargs)
 
 
-analysed_files = Analysis([main_file], pathex=[], hiddenimports=hiddenimports)
-pyz = PYZ(toc=analysed_files)
+analysed_files = Analysis([main_file],
+                          pathex=[],
+                          hiddenimports=hiddenimports,
+                          binaries=[],
+                          datas=[],
+                          hookspath=[],
+                          hooksconfig={},
+                          runtime_hooks=[],
+                          excludes=[],
+                          noarchive=False,
+                          optimize=0,
+                          )
+analysed_files.pure.append(common.generate_builtin_exinfo('Release'))
+pyz = PYZ(analysed_files.pure)
 flag_onefile = common.spec_startups.get('onefile', False)
 result = assemble(flag_onefile, analysed_files, pyz)
 # return result
