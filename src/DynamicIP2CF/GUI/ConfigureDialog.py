@@ -90,7 +90,7 @@ class MiscSettingsTab(QWidget):
 
         self.languageGroupLayout = QHBoxLayout(self.languageGroup)
         self.languageGroupLayout.setSpacing(15)
-        self.languageGroup.setLayout(self.languageGroupLayout)
+        # self.languageGroup.setLayout(self.languageGroupLayout)
 
         self.languageComboBox = gui_utils.create_language_combo_box(self.languageGroup)
         self.initial_lang = gui_utils.get_language_name_from_locale(common.iniConfigManager.config.get("Language", "lang", fallback=""))
@@ -110,14 +110,14 @@ class MiscSettingsTab(QWidget):
 
         self.proxyGroupLayout = QHBoxLayout(self.proxyGroup)
         self.proxyGroupLayout.setSpacing(15)
-        self.proxyGroup.setLayout(self.proxyGroupLayout)
+        # self.proxyGroup.setLayout(self.proxyGroupLayout)
 
         self.proxyModeRadioGroupBox = QGroupBox(parent=self.proxyGroup, title=R.string.gui.configure_dialog.misc_settings_tab.proxy_group.proxy_mode)
         self.proxyGroupLayout.addWidget(self.proxyModeRadioGroupBox)
 
         self.proxyModeRadioGroupBoxLayout = QVBoxLayout(self.proxyModeRadioGroupBox)
         self.proxyModeRadioGroupBoxLayout.setSpacing(15)
-        self.proxyModeRadioGroupBox.setLayout(self.proxyModeRadioGroupBoxLayout)
+        # self.proxyModeRadioGroupBox.setLayout(self.proxyModeRadioGroupBoxLayout)
 
         self.proxyModeNoProxyRadioButton = QRadioButton(R.string.gui.configure_dialog.misc_settings_tab.proxy_group.proxy_mode_off, parent=self.proxyModeRadioGroupBox)
         self.proxyModeAutoRadioButton = QRadioButton(R.string.gui.configure_dialog.misc_settings_tab.proxy_group.proxy_mode_auto, parent=self.proxyModeRadioGroupBox)
@@ -141,7 +141,7 @@ class MiscSettingsTab(QWidget):
         self.proxyGroupLayout.addWidget(self.proxyManualParamsGroup)
 
         self.proxyManualParamsGroupLayout = QVBoxLayout(self.proxyManualParamsGroup)
-        self.proxyManualParamsGroup.setLayout(self.proxyManualParamsGroupLayout)
+        # self.proxyManualParamsGroup.setLayout(self.proxyManualParamsGroupLayout)
 
         self.proxyManualParams_proxyUrlLabel = QLabel(R.string.gui.configure_dialog.misc_settings_tab.proxy_group.proxy_url, parent=self.proxyManualParamsGroup)
         self.proxyManualParams_proxyUrlEdit = QLineEdit(parent=self.proxyManualParamsGroup)
@@ -226,7 +226,7 @@ class AboutTab(QWidget):
         self.imageLabel.setPixmap(pixmap)
         self.layout.addWidget(self.imageLabel)
 
-        self.rightDetailsLayout = QVBoxLayout(self)
+        self.rightDetailsLayout = QVBoxLayout()
         self.rightDetailsLayout.setSpacing(10)
         self.layout.addLayout(self.rightDetailsLayout)
 
@@ -240,7 +240,7 @@ class AboutTab(QWidget):
         self.textLabel.setOpenExternalLinks(True)
         self.rightDetailsLayout.addWidget(self.textLabel)
 
-        self.checkUpdatelayout = QHBoxLayout(self)
+        self.checkUpdatelayout = QHBoxLayout()
         self.checkUpdateButton = QPushButton(R.string.gui.configure_dialog.about_tab.check_update.check_update, self)
         self.checkUpdateButton.clicked.connect(self.check_update)
         self.checkUpdatelayout.addWidget(self.checkUpdateButton)
@@ -305,7 +305,7 @@ class ConfigureDialog(QDialog):
         self.setStyleSheet(style_string)
 
         self.layout = QVBoxLayout(self)
-        self.setLayout(self.layout)
+        # self.setLayout(self.layout)
         # set spacing between widgets
         self.layout.setSpacing(15)
         # set margin of the layout
