@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="语言模块1" pattern="file:res/R/string/i18n/*/string.py" />
+</component>
