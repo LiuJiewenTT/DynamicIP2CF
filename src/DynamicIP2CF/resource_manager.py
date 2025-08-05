@@ -25,7 +25,7 @@ class ResourceManager:
         self.env_var_manager = EnvVarManager()
         self.res_root = os.getenv("{}_RES_PATH".format(common_static.program_name.upper()))
         if not self.res_root:
-            python_paths = self.env_var_manager.split_env_var(os.getenv('PYTHONPATH'))
+            python_paths = self.env_var_manager.split_env_var(os.getenv('PYTHONPATH', ''))
             # print(python_paths)
             for path in python_paths:
                 if path.endswith(os.sep + "res"):

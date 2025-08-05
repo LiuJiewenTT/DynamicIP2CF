@@ -1,3 +1,4 @@
+import sys
 from typing import Dict, Union, SupportsInt
 
 import requests
@@ -97,7 +98,7 @@ if __name__ == "__main__":
     if flag_generate_config_ini:
         common.iniConfigManager = common.IniConfigManager(common.config_ini_path)
         common.iniConfigManager.generate_config_file()
-        exit(0)
+        sys.exit(0)
 
     if args.language:
         R.string.use_lang(args.language)
@@ -162,7 +163,7 @@ if __name__ == "__main__":
             for arg in required_args:
                 if record_info.get(arg) is None:
                     print("Error: {arg} is required in CLI automated mode.".format(arg=arg))
-                    exit(1)
+                    sys.exit(1)
 
             record_info_list = record_info.values()
 
@@ -171,7 +172,7 @@ if __name__ == "__main__":
 
             retv, status_code, result_text = cf_update_ip(*record_info_list, proxies=used_proxies, override_list=override_list)
 
-            exit(0 if retv else 1)
+            sys.exit(0 if retv else 1)
         else:
             # cli交互模式
             print(programinfo.programinfo_str1)
@@ -181,10 +182,10 @@ if __name__ == "__main__":
             retv, status_code, result_text = cf_update_ip(*record_info_list, proxies=used_proxies, override_list=override_list)
             if retv:
                 print("Update IP success.")
-                exit(0)
+                sys.exit(0)
             else:
                 print("Update IP failed. Status code: {status_code}, result text: {result_text}".format(status_code=status_code, result_text=result_text))
-                exit(1)
+                sys.exit(1)
     else:
         # GUI模式
         print(programinfo.programinfo_str1)

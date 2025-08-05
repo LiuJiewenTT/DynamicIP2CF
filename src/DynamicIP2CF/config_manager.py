@@ -31,10 +31,14 @@ class IniConfigManager(ConfigManager):
             self.config = config
         self.generate_all_sections()
 
+    def _add_section(self, section):
+        if section not in self.config.sections():
+            self.config.add_section(section)
+
     def generate_all_sections(self):
-        self.config.add_section("Cloudflare")
-        self.config.add_section("Proxy")
-        self.config.add_section("Language")
+        self._add_section("Cloudflare")
+        self._add_section("Proxy")
+        self._add_section("Language")
 
     def read_config_file(self):
         super().read_config_file()
@@ -67,7 +71,7 @@ class IniConfigManager(ConfigManager):
 
     def generate_record_info(self) -> None:
         config = self.config
-        config.add_section("Cloudflare")
+        self._add_section("Cloudflare")
         config.set("Cloudflare", "ip_version", "v6")
         config.set("Cloudflare", "ip", "your_ip_address")
         config.set("Cloudflare", "api_token", "your_api_token")
