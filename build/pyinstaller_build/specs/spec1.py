@@ -10,6 +10,9 @@ from ..common import *
 hiddenimports = []
 # hiddenimports = ['_pyi_rth_utils']
 
+# runtime_hooks = []
+runtime_hooks = [osp.join(runtime_hooks_path, 'main_hook.py')]
+
 
 def assemble(flag_onefile: bool, a: Analysis, pyz: PYZ) -> Union[EXE, COLLECT]:
     common_kwargs = {
@@ -60,10 +63,12 @@ analysed_files = Analysis([main_file],
                           pathex=[],
                           hiddenimports=hiddenimports,
                           binaries=[],
-                          datas=[],
+                          datas=[
+                              (osp.join(res_path, 'assets'), osp.join('res', 'assets'))
+                          ],
                           hookspath=[],
                           hooksconfig={},
-                          runtime_hooks=[],
+                          runtime_hooks=runtime_hooks,
                           excludes=[],
                           noarchive=False,
                           optimize=0,

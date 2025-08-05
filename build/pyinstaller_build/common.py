@@ -19,6 +19,9 @@ res_path = osp.join(project_root_path, 'res')
 dist_path = osp.join(build_root_path, 'dist')         # 打包输出目录
 work_path = osp.join(build_root_path, 'build')        # 打包临时目录
 specs_path = osp.join(build_root_path, 'specs')        # 打包配置文件目录
+runtime_hooks_path = osp.join(build_root_path, 'runtime_hooks')  # 运行时钩子目录
+
+# 自定义缓存目录
 my_build_cache_path = osp.join(build_root_path, 'my_build_cache')
 
 print(f'build_root_path: {build_root_path}')
@@ -28,6 +31,8 @@ print(f'res_path: {res_path}')
 print(f'dist_path: {dist_path}')
 print(f'work_path: {work_path}')
 print(f'specs_path: {specs_path}')
+print(f'runtime_hooks_path: {runtime_hooks_path}')
+print(f'my_build_cache_path: {my_build_cache_path}')
 
 main_file = f'{src_path}/DynamicIP2CF/main.py'
 gui_main_file = f'{src_path}/DynamicIP2CF/gui/main.py'
