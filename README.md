@@ -32,7 +32,7 @@ Dynamically update IP to Cloudflare.
 </div>
 
 <div class="quick-navigate">
-    <span id="quick-navigate-title">快速访问：</span><br>
+    <span id="quick-navigate-title">快速访问：<br></span>
     <div class="quick-navigate-item-group">
         &nbsp;&nbsp;&nbsp;&nbsp;
         <span class="quick-navigate-item"><a href="#使用">使用</a></span>
