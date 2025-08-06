@@ -11,10 +11,10 @@ Dynamically update IP to Cloudflare.
     <img src="res/assets/icon.png" style="max-width: 50%; max-height: 50%;" alt="DynamicIP2CF Icon.png"/>
 </div>
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="docs/js/go_to_top.js"></script>
-<link rel="stylesheet" href="docs/css/main.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" >
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" ></script>
+<script src="docs/js/go_to_top.js" ></script>
+<link rel="stylesheet" href="docs/css/main.css" >
 
 <div class="go-to-top" style="display: none;">
     <i class="fas fa-arrow-up"></i>
