@@ -12,8 +12,8 @@ Dynamically update IP to Cloudflare.
 </div>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" >
-<script src="https://code.jquery.com/jquery-3.6.0.min.js" ></script>
-<script src="docs/js/go_to_top.js" ></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" hidden></script>
+<script src="docs/js/go_to_top.js" hidden></script>
 <link rel="stylesheet" href="docs/css/main.css" >
 
 <div class="go-to-top" style="display: none;">
