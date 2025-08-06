@@ -50,8 +50,7 @@ span.quick-navigate-item:active {
 
 span.quick-navigate-title {
     font-weight: bold; /* 加粗标题 */
-    text-align: center; /* 水平居中 */
-    margin-bottom: 5px; /* 与下方元素间距 */
+    margin-bottom: 10px; /* 与下方元素间距 */
     width: 100%;
 }
 
