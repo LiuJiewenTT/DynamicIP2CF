@@ -27,7 +27,7 @@ Dynamically update IP to Cloudflare.
 <div style="align-items: center; justify-content: center; display: flex; margin: 10px; gap: 10px; flex-wrap: wrap;">
    <img alt="GitHub Downloads (all assets, all releases)" src="https://img.shields.io/github/downloads/LiuJiewenTT/DynamicIP2CF/total">
    <img alt="GitHub Release" src="https://img.shields.io/github/v/release/LiuJiewenTT/DynamicIP2CF">
-   <img alt="GitHub Actions Workflow Status" src="https://img.shields.io/github/actions/workflow/status/LiuJiewenTT/DynamicIP2CF/jekyll-gh-pages.yml">
+   <img alt="GitHub Repo stars" src="https://img.shields.io/github/stars/LiuJiewenTT/DynamicIP2CF">
    <img alt="GitHub License" src="https://img.shields.io/github/license/LiuJiewenTT/DynamicIP2CF">
 </div>
 
@@ -50,7 +50,7 @@ Dynamically update IP to Cloudflare.
 
 > [!NOTE]
 >
-> 当前程序没有定时执行的功能。
+> 当前程序没有定时执行的功能，因为记录不会过时。
 
 
 
@@ -114,8 +114,28 @@ Dynamically update IP to Cloudflare.
 
 ### 配置和准备
 
+开发环境请参照实际情况自行配置，或在构建环境的基础上进行增减配置。推荐安装的库包括：
+
+1. PySide6
+2. requests
+3. ipaddress
+4. argparse
+5. configparser
+6. mypy
+
+> [!TIP]
+> 
+> 推荐使用PyCharm作为开发环境，并启用文件监视器器，以便实时更新字符串资源的pyi文件。
+
+构建环境 *build_env_pyinstaller* 设置：
+
+``` cmd
+python -m venv build_env_pyinstaller
+build_env_pyinstaller\Scripts\activate
+pip install -r venv_requirements\build_venv_pyinstaller_requirements.txt
+```
 
 ### 构建
 
-
+切换到构建环境，运行PyCharm任务 *build* （对应文件是`.run/build.run.xml`）。
 
