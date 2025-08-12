@@ -72,3 +72,21 @@ def generate_builtin_exinfo(edition_str: str):
     builtin_exinfo = (f"{programinfo.__package__}.builtin_exinfo", osp.join(my_build_cache_path, "builtin_exinfo.py"), 'PYMODULE')
     return builtin_exinfo
 
+
+qt_wanted_list = [
+    'qicns.dll',
+    'qminimal.dll',
+    'qjpeg.dll',
+    'qwindows.dll',
+    'QtGui',
+    'QtNetwork',
+    'QtCore',
+    'QtWidgets',
+    'Qt6Core',
+    'Qt6Gui',
+    'Qt6Network',
+    'Qt6Widgets',
+    'pyside6.abi',
+    'styles'
+]
+

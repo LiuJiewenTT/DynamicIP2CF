@@ -73,6 +73,41 @@ analysed_files = Analysis([main_file],
                           noarchive=False,
                           optimize=0,
                           )
+
+temp_list = []
+for i in range(analysed_files.binaries.__len__()):
+    item = analysed_files.binaries[i]
+    if item[0].startswith('PySide6'):
+        print(item, end='')
+        temp_flag = False
+        for wanted_item in common.qt_wanted_list:
+            if wanted_item in item[0]:
+                temp_flag = True
+                break
+        if not temp_flag:
+            print(' removed')
+        else:
+            temp_list.append(item)
+            print()
+    else:
+        temp_list.append(item)
+analysed_files.binaries = temp_list
+
+temp_list = []
+for i in range(analysed_files.datas.__len__()):
+    item = analysed_files.datas[i]
+    if item[0].startswith('PySide6'):
+        print(item, end='')
+        temp_flag = False
+        if item[0].endswith('.qm'):
+            print(' removed')
+        else:
+            temp_list.append(item)
+            print()
+    else:
+        temp_list.append(item)
+analysed_files.datas = temp_list
+
 analysed_files.pure.append(common.generate_builtin_exinfo('Release'))
 pyz = PYZ(analysed_files.pure)
 flag_onefile = common.spec_startups.get('onefile', False)

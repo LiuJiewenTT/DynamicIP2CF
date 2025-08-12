@@ -3,7 +3,7 @@ from . import common
 from .common import *
 
 spec_file = osp.join(specs_path, 'spec1.py')
-# flag_clean_build = True
+flag_clean_build = True
 flag_clean_build = False
 
 common.spec_startups = {
