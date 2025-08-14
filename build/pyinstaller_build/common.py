@@ -43,6 +43,7 @@ spec_startups: dict # 中转构建配置
 
 
 builtin_exinfo: object
+build_edition: str
 
 
 def generate_builtin_exinfo(edition_str: str):
@@ -73,20 +74,53 @@ def generate_builtin_exinfo(edition_str: str):
     return builtin_exinfo
 
 
-qt_wanted_list = [
-    'qicns.dll',
-    'qminimal.dll',
+qt_wanted_binaries_list = [
     'qjpeg.dll',
     'qwindows.dll',
     'QtGui',
-    'QtNetwork',
     'QtCore',
     'QtWidgets',
     'Qt6Core',
     'Qt6Gui',
-    'Qt6Network',
     'Qt6Widgets',
     'pyside6.abi',
     'styles'
 ]
 
+
+def qt_wanted_binaries_filter(binaries: list) -> list:
+    temp_list = []
+    for i in range(binaries.__len__()):
+        item = binaries[i]
+        if item[0].startswith('PySide6'):
+            print(item, end='')
+            temp_flag = False
+            for wanted_item in qt_wanted_binaries_list:
+                if wanted_item in item[0]:
+                    temp_flag = True
+                    break
+            if not temp_flag:
+                print(' removed')
+            else:
+                temp_list.append(item)
+                print()
+        else:
+            temp_list.append(item)
+    return temp_list
+
+
+def qt_wanted_datas_filter(datas: list) -> list:
+    temp_list = []
+    for i in range(datas.__len__()):
+        item = datas[i]
+        if item[0].startswith('PySide6'):
+            print(item, end='')
+            temp_flag = False
+            if item[0].endswith('.qm'):
+                print(' removed')
+            else:
+                temp_list.append(item)
+                print()
+        else:
+            temp_list.append(item)
+    return temp_list
