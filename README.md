@@ -12,9 +12,12 @@ Dynamically update IP to Cloudflare.
 </div>
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" >
-<script src="https://code.jquery.com/jquery-3.6.0.min.js" ></script>
-<script src="docs/js/go_to_top.js" ></script>
+<link rel="stylesheet" href="https://github.githubassets.com/assets/node_modules/@primer/primitives/dist/css/base/typography/typography.css" >
+<link rel="stylesheet" href="https://github.githubassets.com/assets/node_modules/@primer/primitives/dist/css/base/size/size.css" >
+<link rel="stylesheet" href="https://github.githubassets.com/assets/node_modules/@primer/primitives/dist/css/functional/themes/light.css" >
+<link rel="stylesheet" href="docs/css/gh.css" >
 <link rel="stylesheet" href="docs/css/main.css" >
+<script src="readme.js" ></script>
 
 <div class="go-to-top" style="display: none;">
     <i class="fas fa-arrow-up"></i>
