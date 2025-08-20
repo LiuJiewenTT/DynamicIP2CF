@@ -156,10 +156,12 @@ class MainWindow(QMainWindow):
     def update_status(self, status: str):
         self.status_label.setText(status)
         gui_utils.adjust_widget_size_recursively(self.status_label)
+        self.status_label.repaint()
 
     def update_result(self, result: str):
         self.result_label.setText(result)
         gui_utils.adjust_widget_size_recursively(self.result_label)
+        self.result_label.repaint()
 
     def get_selected_ip(self) -> Union[str, None]:
         if self.list_widget.count() == 0:
