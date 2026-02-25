@@ -112,6 +112,7 @@ string_dict = {
                     "check_update": "检查更新",
                     "is_latest": "当前已是最新版本",
                     "check_failed": "检查更新失败: {error_message}",
+                    "check_failed_no_connection": "检查更新失败: 连接失败。详细错误信息：\n{error_message}",
                     "found_update": "发现新版本: {new_version}"
                 }
             }

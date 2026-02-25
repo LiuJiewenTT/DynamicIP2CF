@@ -112,6 +112,7 @@ string_dict = {
                     "check_update": "Check for updates",
                     "is_latest": "You are using the latest version.",
                     "check_failed": "Failed to check for updates: {error_message}",
+                    "check_failed_no_connection": "Failed to check for updates: cannot connect. Details: \n{error_message}",
                     "found_update": "Found new version: {new_version}"
                 }
             }

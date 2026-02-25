@@ -1,11 +1,12 @@
 import sys
 from typing import Union, List, Tuple, Dict, TypedDict
+import requests
 import ipaddress
 
 from PySide6.QtGui import QPixmap, QPalette, QResizeEvent, QShowEvent
 from PySide6.QtWidgets import QApplication, QDialog, QDialogButtonBox, QLabel, QVBoxLayout, QHBoxLayout, QSizePolicy, \
     QGridLayout, QLineEdit, QWidget, QTabWidget, QPushButton, QGroupBox, QRadioButton, QButtonGroup, QTextBrowser
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, Signal, Slot, QObject, QThread
 
 import R
 from DynamicIP2CF import common
@@ -201,6 +202,34 @@ class MiscSettingsTab(QWidget):
         common.iniConfigManager.update_proxy_info(proxy_mode, proxy_url, proxy_override)
 
 
+class UpdateChecker(QObject):
+    update_checked = Signal(str)
+
+    def __init__(self, parent=None):
+        super().__init__(parent=parent)
+
+    @Slot()
+    def check_update(self):
+        try:
+            status, version_message, status_code, response_text = gui_utils.check_update_available()
+
+            if status:
+                message = R.string.gui.configure_dialog.about_tab.check_update.found_update.format(
+                    new_version=version_message)
+            else:
+                if version_message == "":
+                    message = R.string.gui.configure_dialog.about_tab.check_update.check_failed.format(
+                        error_message=f"[{status_code}]: {response_text}")
+                else:
+                    message = R.string.gui.configure_dialog.about_tab.check_update.is_latest
+        except requests.exceptions.ConnectionError as ce:
+            message = R.string.gui.configure_dialog.about_tab.check_update.check_failed_no_connection.format(
+                error_message=str(ce))
+
+        # 发射信号，将更新信息传递给主线程
+        self.update_checked.emit(message)
+
+
 class AboutTab(QWidget):
 
     def __init__(self, parent=None):
@@ -256,15 +285,23 @@ class AboutTab(QWidget):
         self.checkUpdatelayout.setStretchFactor(self.checkUpdateResultLabel, 1)
 
     def check_update(self):
-        status, version_message, status_code, response_text = gui_utils.check_update_available()
-        message: str
-        if status:
-            message = R.string.gui.configure_dialog.about_tab.check_update.found_update.format(new_version=version_message)
-        else:
-            if version_message == "":
-                message = R.string.gui.configure_dialog.about_tab.check_update.check_failed.format(error_message=f"[{status_code}]: {response_text}")
-            else:
-                message = R.string.gui.configure_dialog.about_tab.check_update.is_latest
+        # 创建一个UpdateChecker实例
+        self.update_checker = UpdateChecker()
+        self.update_checker.update_checked.connect(self.display_check_update_result)
+
+        # 启动一个线程来检查更新
+        self.check_update_thread = QThread()
+        self.update_checker.moveToThread(self.check_update_thread)
+
+        self.check_update_thread.started.connect(self.update_checker.check_update)
+        self.check_update_thread.finished.connect(self.check_update_thread.deleteLater)     # 释放线程资源
+
+        self.update_checker.update_checked.connect(self.check_update_thread.quit)           # 结束线程
+        self.check_update_thread.start()
+
+    @Slot(str)
+    def display_check_update_result(self, message: str):
+        print(f'Update check result: {message}')
         self.checkUpdateResultLabel.setText(message)
         gui_utils.adjust_widget_size_recursively(self.checkUpdateResultLabel)
 
