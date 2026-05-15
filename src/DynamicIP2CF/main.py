@@ -109,6 +109,8 @@ if __name__ == "__main__":
         # 为GUI模式启用缺省配置文件名
         if not flag_cli_mode:
             config_ini_path = common.config_ini_path
+            common.iniConfigManager = common.IniConfigManager(common.config_ini_path)
+            common.iniConfigManager.generate_config_file()
         else:
             print(R.string.config.ini.warnings.no_file_and_prompt_default.format(default_ini_config_file=common.config_ini_path))
 
