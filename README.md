@@ -49,6 +49,8 @@ Dynamically update IP to Cloudflare.
 
 这是一个管理Cloudflare上DNS记录中的IP地址的程序，可以让用户可视化对DNS中的IP地址进行管理，以达成DDNS功能。
 
+![程序界面一览图.png](docs/image/程序界面一览图.png)
+
 程序包含 **CLI** 和 **GUI** 部分，提供三种运行模式：一种命令行自动化，一种命令行交互，还有一种可视化管理。程序默认进入交互模式，并优先进入可视化管理模式。
 
 > [!NOTE]

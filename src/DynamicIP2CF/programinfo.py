@@ -12,8 +12,8 @@ product_name = 'DynamicIP2CF'
 product_description_short = 'CloudFlare Dynamic IP Updater'
 product_description = 'A simple tool to update CloudFlare DNS records with your current public IP address.'
 program_name = 'DynamicIP2CF'
-product_version = (0, 0, 1, 0)
-program_version = (0, 0, 1, 0)
+product_version = (1, 0, 0, 0)
+program_version = (1, 0, 0, 0)
 program_version_str: str
 program_iconpicture_paths = [
     'res/assets/icon.png',
