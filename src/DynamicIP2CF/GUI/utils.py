@@ -40,6 +40,10 @@ def compare_version(version1: str, version2: str) -> int:
     :param version2:
     :return: 1, 0, -1
     """
+    if version1.startswith('v'):
+        version1 = version1[1:]
+    if version2.startswith('v'):
+        version2 = version2[1:]
     v1 = version1.split('.')
     v2 = version2.split('.')
     for i in range(max(len(v1), len(v2))):
