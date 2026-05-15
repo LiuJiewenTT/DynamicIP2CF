@@ -238,9 +238,9 @@ class AboutTab(QWidget):
 
     def showEvent(self, event: QShowEvent) -> None:
         super().showEvent(event)
-        if self.textLabel.minimumWidth() == 0:
-            self.textLabel.setMinimumWidth(self.textLabel.width() + 20)
-            self.textLabel.adjustSize()
+
+        # 修复控件尺寸不正确问题
+        self.textLabel.adjustSize()
 
     def __init_layout(self):
         self.layout = QHBoxLayout(self)
